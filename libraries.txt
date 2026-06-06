@@ -1,0 +1,7 @@
+# Bibliotecas necessárias para o projeto AgroGuard IoT
+# Cole este arquivo em libraries.txt no Wokwi ou instale no Arduino IDE
+
+# Wokwi Manager — adicione estas na aba Libraries do projeto Wokwi:
+DHT sensor library @ 1.4.6
+LiquidCrystal I2C @ 1.1.2
+ArduinoJson @ 6.21.5

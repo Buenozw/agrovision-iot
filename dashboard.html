@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AgroVision — Dashboard IoT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+  /* ── RESET & BASE ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #050e07;
+    --surface:   #0c1f11;
+    --surface2:  #112818;
+    --border:    #1e4029;
+    --accent:    #39ff6e;
+    --accent2:   #00d4aa;
+    --warn:      #f5a623;
+    --danger:    #ff3b5c;
+    --text:      #c8f0d2;
+    --muted:     #4d7a5a;
+    --font-head: 'Syne', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-mono);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: .5;
+  }
+
+  /* ── SCAN LINE ── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,80,.012) 2px, rgba(0,255,80,.012) 4px);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── LAYOUT ── */
+  .wrap { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px 48px; }
+
+  /* ── HEADER ── */
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 32px 0 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+    flex-wrap: wrap; gap: 16px;
+  }
+
+  .logo-group { display: flex; align-items: center; gap: 14px; }
+
+  .logo-mark {
+    width: 48px; height: 48px;
+    background: var(--accent);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 0 24px rgba(57,255,110,.4);
+  }
+
+  h1 {
+    font-family: var(--font-head);
+    font-weight: 800; font-size: 1.7rem;
+    letter-spacing: -1px;
+    color: #fff;
+  }
+  h1 span { color: var(--accent); }
+
+  .tagline { font-size: .65rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+
+  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+
+  /* ── CONNECTION PANEL ── */
+  .conn-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 14px;
+  }
+
+  .conn-panel label { font-size: .7rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+  .conn-input-group { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 260px; }
+
+  .conn-input-group input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: .85rem;
+    padding: 9px 14px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .conn-input-group input:focus { border-color: var(--accent); }
+  .conn-input-group input::placeholder { color: var(--muted); }
+
+  .btn {
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: none;
+    font-family: var(--font-mono);
+    font-size: .8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .5px;
+  }
+
+  .btn-connect {
+    background: var(--accent);
+    color: #050e07;
+  }
+  .btn-connect:hover { box-shadow: 0 0 16px rgba(57,255,110,.5); transform: translateY(-1px); }
+  .btn-connect:disabled { opacity: .4; cursor: default; transform: none; box-shadow: none; }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+  }
+  .btn-danger:hover { background: rgba(255,59,92,.1); }
+
+  .btn-warn {
+    background: transparent;
+    color: var(--warn);
+    border: 1px solid var(--warn);
+  }
+  .btn-warn:hover { background: rgba(245,166,35,.08); }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .conn-status {
+    display: flex; align-items: center; gap: 8px;
+    font-size: .75rem; color: var(--muted);
+  }
+
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--muted);
+    transition: background .4s, box-shadow .4s;
+  }
+  .dot.online { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 2s infinite; }
+  .dot.error  { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
+  .dot.warn   { background: var(--warn);   box-shadow: 0 0 8px var(--warn); }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .timestamp { font-size: .65rem; color: var(--muted); font-family: var(--font-mono); }
+
+  /* ── CAMPO BADGE ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 14px; border-radius: 20px;
+    font-size: .72rem; font-weight: 700; letter-spacing: .5px;
+    text-transform: uppercase;
+    border: 1px solid;
+  }
+  .badge.ok     { color: var(--accent); border-color: var(--accent); background: rgba(57,255,110,.08); }
+  .badge.obs    { color: var(--warn);   border-color: var(--warn);   background: rgba(245,166,35,.08); }
+  .badge.crit   { color: var(--danger); border-color: var(--danger); background: rgba(255,59,92,.08); animation: blink .8s infinite; }
+  .badge.idle   { color: var(--muted);  border-color: var(--border);  background: transparent; }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+  /* ── CARDS GRID ── */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 20px;
+    position: relative; overflow: hidden;
+    transition: border-color .3s, box-shadow .3s;
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--accent);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .5s;
+  }
+  .card.active::before { transform: scaleX(1); }
+  .card.warn-state  { border-color: var(--warn);   box-shadow: 0 0 20px rgba(245,166,35,.1); }
+  .card.crit-state  { border-color: var(--danger);  box-shadow: 0 0 20px rgba(255,59,92,.12); animation: shake .3s; }
+
+  @keyframes shake {
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-4px)}
+    75%{transform:translateX(4px)}
+  }
+
+  .card-icon  { font-size: 1.4rem; margin-bottom: 10px; }
+  .card-value { font-family: var(--font-head); font-size: 2.4rem; font-weight: 800; color: #fff; line-height: 1; }
+  .card-unit  { font-size: .75rem; color: var(--muted); margin-left: 3px; }
+  .card-label { font-size: .6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 8px; }
+
+  .card-glow {
+    position: absolute; bottom: -20px; right: -20px;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: var(--accent); opacity: .04; filter: blur(20px);
+  }
+
+  /* ── NDVI BAR ── */
+  .ndvi-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .section-title {
+    font-family: var(--font-head);
+    font-size: .7rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--muted); margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .ndvi-track { position: relative; height: 28px; background: var(--bg); border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }
+
+  .ndvi-zones {
+    position: absolute; inset: 0; display: flex;
+  }
+  .zone-crit  { background: rgba(255,59,92,.12); flex: 35; }
+  .zone-obs   { background: rgba(245,166,35,.12); flex: 15; }
+  .zone-ok    { background: rgba(57,255,110,.07); flex: 50; }
+
+  .ndvi-fill {
+    position: absolute; top: 0; left: 0; height: 100%;
+    border-radius: 14px;
+    transition: width 1s cubic-bezier(.4,0,.2,1), background .5s;
+    background: var(--accent);
+    min-width: 4px;
+  }
+
+  .ndvi-markers {
+    display: flex; justify-content: space-between;
+    margin-top: 8px; font-size: .6rem; color: var(--muted);
+  }
+
+  .ndvi-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 14px; flex-wrap: wrap; gap: 8px;
+  }
+
+  .ndvi-interp { font-size: .8rem; color: var(--text); }
+  .ndvi-value-big {
+    font-family: var(--font-head);
+    font-size: 2.2rem; font-weight: 800; color: var(--accent);
+    line-height: 1;
+  }
+
+  /* ── ALERT BOX ── */
+  .alert-section {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 24px;
+    margin-bottom: 24px;
+    flex-wrap: wrap; gap: 12px;
+    transition: border-color .3s;
+  }
+  .alert-section.active-alert { border-color: var(--danger); background: rgba(255,59,92,.04); }
+
+  .alert-info { display: flex; align-items: center; gap: 12px; }
+  .alert-label { font-size: .65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .alert-causes { font-size: .7rem; color: var(--muted); margin-top: 3px; }
+
+  /* ── LOG ── */
+  .log-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+
+  #log-list {
+    max-height: 180px;
+    overflow-y: auto;
+    display: flex; flex-direction: column; gap: 4px;
+    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+  }
+
+  .log-entry {
+    font-size: .68rem; font-family: var(--font-mono);
+    color: var(--muted);
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(30,64,41,.4);
+    display: flex; gap: 10px;
+    animation: fadeIn .3s;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+  .log-entry.ok     .log-msg { color: var(--accent); }
+  .log-entry.warn   .log-msg { color: var(--warn); }
+  .log-entry.danger .log-msg { color: var(--danger); }
+  .log-time { color: var(--border); flex-shrink: 0; }
+
+  /* ── WOKWI GUIDE ── */
+  .guide-section {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .guide-steps { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+
+  .guide-step {
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+
+  .step-num {
+    width: 28px; height: 28px; flex-shrink: 0;
+    background: var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .7rem; font-weight: 700; color: var(--accent);
+    font-family: var(--font-head);
+  }
+
+  .step-body { font-size: .75rem; color: var(--text); line-height: 1.6; }
+  .step-body code {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 6px;
+    font-family: var(--font-mono); font-size: .72rem; color: var(--accent2);
+  }
+
+  /* ── ENDPOINTS TABLE ── */
+  .endpoints { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: .72rem; }
+  .endpoints th { color: var(--muted); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); font-weight: 400; letter-spacing: 1px; text-transform: uppercase; font-size: .6rem; }
+  .endpoints td { padding: 10px 12px; border-bottom: 1px solid rgba(30,64,41,.4); color: var(--text); }
+  .endpoints tr:hover td { background: rgba(57,255,110,.03); }
+  .method { color: var(--accent); font-weight: 700; }
+  .route  { color: var(--accent2); }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center; font-size: .6rem; color: var(--border);
+    padding-top: 24px; border-top: 1px solid var(--border);
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    h1 { font-size: 1.3rem; }
+    .card-value { font-size: 2rem; }
+    .conn-panel { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-group">
+      <div class="logo-mark">🛰</div>
+      <div>
+        <h1>Agro<span>Vision</span></h1>
+        <div class="tagline">IoT Dashboard · ESP32 · Wokwi Integration</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="timestamp" id="ts">--:--:--</span>
+      <span class="badge idle" id="campo-badge">⬤ Aguardando</span>
+    </div>
+  </header>
+
+  <!-- CONNECTION PANEL -->
+  <div class="conn-panel">
+    <div style="flex:1;min-width:260px;">
+      <label>Endereço IP do ESP32 (Wokwi)</label>
+      <div class="conn-input-group" style="margin-top:8px;">
+        <input type="text" id="ip-input" placeholder="Ex: 10.0.0.2" value=""/>
+        <button class="btn btn-connect" id="btn-connect" onclick="conectar()">Conectar</button>
+        <button class="btn btn-warn" onclick="simular()">Demo</button>
+      </div>
+    </div>
+    <div class="conn-status">
+      <div class="dot" id="conn-dot"></div>
+      <span id="conn-label">Desconectado</span>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div style="display:flex;gap:10px;align-items:center;">
+      <span style="font-size:.65rem;color:var(--muted);">CAMPO:</span>
+      <span class="badge idle" id="status-badge">Aguardando conexão</span>
+    </div>
+    <div style="font-size:.65rem;color:var(--muted);" id="uptime-label">Uptime: --</div>
+  </div>
+
+  <!-- SENSOR CARDS -->
+  <div class="cards">
+    <div class="card" id="card-temp">
+      <div class="card-icon">🌡️</div>
+      <div><span class="card-value" id="v-temp">--</span><span class="card-unit">°C</span></div>
+      <div class="card-label">Temperatura</div>
+      <div class="card-glow"></div>
+    </div>
+    <div class="card" id="card-umar">
+      <div class="card-icon">💧</div>
+      <div><span class="card-value" id="v-umar">--</span><span class="card-unit">%</span></div>
+      <div class="card-label">Umidade do Ar</div>
+      <div class="card-glow"></div>
+    </div>
+    <div class="card" id="card-solo">
+      <div class="card-icon">🌱</div>
+      <div><span class="card-value" id="v-solo">--</span><span class="card-unit">%</span></div>
+      <div class="card-label">Umidade do Solo</div>
+      <div class="card-glow"></div>
+    </div>
+    <div class="card" id="card-ndvi">
+      <div class="card-icon">🛰️</div>
+      <div><span class="card-value" id="v-ndvi">--</span></div>
+      <div class="card-label">NDVI Estimado</div>
+      <div class="card-glow"></div>
+    </div>
+  </div>
+
+  <!-- NDVI BAR -->
+  <div class="ndvi-section">
+    <div class="section-title">Índice NDVI — Saúde da Vegetação</div>
+    <div class="ndvi-track">
+      <div class="ndvi-zones">
+        <div class="zone-crit"></div>
+        <div class="zone-obs"></div>
+        <div class="zone-ok"></div>
+      </div>
+      <div class="ndvi-fill" id="ndvi-fill" style="width:0%"></div>
+    </div>
+    <div class="ndvi-markers">
+      <span>0.0 — Crítico</span>
+      <span>0.35</span>
+      <span>0.50 — Atenção</span>
+      <span>1.0 — Saudável</span>
+    </div>
+    <div class="ndvi-meta">
+      <div class="ndvi-interp" id="ndvi-interp">Aguardando dados do ESP32...</div>
+      <div class="ndvi-value-big" id="ndvi-big">—</div>
+    </div>
+  </div>
+
+  <!-- ALERT -->
+  <div class="alert-section" id="alert-box">
+    <div class="alert-info">
+      <div>
+        <div class="alert-label">Alerta Ativo</div>
+        <div class="alert-causes" id="alert-causes">Nenhuma causa detectada</div>
+      </div>
+      <span class="badge idle" id="alert-badge">Nenhum</span>
+    </div>
+    <button class="btn btn-danger" id="btn-reset" onclick="resetarAlerta()" disabled>Resetar Alerta</button>
+  </div>
+
+  <!-- LOG -->
+  <div class="log-section">
+    <div class="section-title">Log de Eventos</div>
+    <div id="log-list"></div>
+  </div>
+
+  <!-- WOKWI GUIDE -->
+  <div class="guide-section">
+    <div class="section-title">Como conectar ao Wokwi</div>
+    <div class="guide-steps">
+      <div class="guide-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          Abra o projeto no Wokwi e inicie a simulação clicando em <strong>▶ Start Simulation</strong>.
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          No painel do Wokwi, clique em <strong>Network</strong> (ou veja o Serial Monitor) para obter o IP atribuído ao ESP32. O IP geralmente começa com <code>10.0.0.</code> ou <code>192.168.</code>.
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          Cole o IP no campo acima e clique em <strong>Conectar</strong>. Este dashboard irá consultar <code>/api/status</code> a cada 2 segundos automaticamente.
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          Se estiver testando localmente sem o Wokwi, clique em <strong>Demo</strong> para ver os dados simulados em tempo real.
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          ⚠️ Caso o navegador bloqueie a requisição por CORS, abra o Wokwi no mesmo navegador ou use uma extensão como <strong>CORS Unblock</strong>. O firmware já envia os headers <code>Access-Control-Allow-Origin: *</code>.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <div class="section-title">Endpoints disponíveis</div>
+      <table class="endpoints">
+        <thead>
+          <tr>
+            <th>Método</th><th>Rota</th><th>Descrição</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="method">GET</td><td class="route">/api/status</td><td>JSON completo dos sensores</td></tr>
+          <tr><td class="method">GET</td><td class="route">/api/ndvi</td><td>NDVI estimado e recomendação</td></tr>
+          <tr><td class="method">GET</td><td class="route">/api/alerta</td><td>Alerta atual e causas</td></tr>
+          <tr><td class="method">POST</td><td class="route">/api/alerta/reset</td><td>Reseta o alerta manualmente</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>AgroVision IoT · FIAP Global Solution 2026/1 · Disruptive Architectures</footer>
+</div>
+
+<script>
+/* ── STATE ── */
+let baseUrl   = '';
+let polling   = null;
+let simMode   = false;
+let simT      = 0;
+let connected = false;
+
+/* ── DOM REFS ── */
+const $ = id => document.getElementById(id);
+
+/* ── UTILS ── */
+function now() {
+  return new Date().toLocaleTimeString('pt-BR');
+}
+
+function ndviColor(n) {
+  if (n >= 0.50) return 'var(--accent)';
+  if (n >= 0.35) return 'var(--warn)';
+  return 'var(--danger)';
+}
+
+function ndviInterp(n) {
+  if (n >= 0.50) return '✅ Vegetação saudável — nenhuma ação necessária.';
+  if (n >= 0.35) return '⚠️ Estresse moderado — monitorar próximo ciclo satelital.';
+  return '🚨 POSSÍVEL INFESTAÇÃO — acionar missão de drone imediatamente!';
+}
+
+function statusClass(s) {
+  if (s === 'Saudavel' || s === 'Saudável') return 'ok';
+  if (s === 'Observacao' || s === 'Observação') return 'obs';
+  return 'crit';
+}
+
+function statusLabel(s) {
+  if (s === 'Saudavel' || s === 'Saudável') return '⬤ Saudável';
+  if (s === 'Observacao' || s === 'Observação') return '◎ Observação';
+  return '⚠ Crítico';
+}
+
+/* ── LOG ── */
+function addLog(msg, type = 'ok') {
+  const list  = $('log-list');
+  const entry = document.createElement('div');
+  entry.className = `log-entry ${type}`;
+  entry.innerHTML = `<span class="log-time">${now()}</span><span class="log-msg">${msg}</span>`;
+  list.prepend(entry);
+  while (list.children.length > 60) list.removeChild(list.lastChild);
+}
+
+/* ── RENDER ── */
+function render(d) {
+  const temp = d.temperatura_c ?? 0;
+  const umar = d.umidade_ar_pct ?? 0;
+  const solo = d.umidade_solo_pct ?? 0;
+  const ndvi = d.ndvi_estimado ?? 0;
+  const st   = d.status_campo ?? 'Critico';
+  const al   = d.alerta_ativo ?? false;
+  const nl   = d.nivel_alerta ?? 'Nenhum';
+  const up   = d.uptime_ms ?? 0;
+
+  /* timestamp */
+  $('ts').textContent = now();
+
+  /* uptime */
+  const s = Math.floor(up / 1000);
+  $('uptime-label').textContent = `Uptime: ${Math.floor(s/60)}m ${s%60}s`;
+
+  /* campo badge header */
+  const cb = $('campo-badge');
+  cb.className = `badge ${statusClass(st)}`;
+  cb.textContent = statusLabel(st);
+
+  /* status badge */
+  const sb = $('status-badge');
+  sb.className = `badge ${statusClass(st)}`;
+  sb.textContent = statusLabel(st);
+
+  /* cards */
+  $('v-temp').textContent = temp.toFixed(1);
+  $('v-umar').textContent = umar.toFixed(1);
+  $('v-solo').textContent = solo.toFixed(0);
+  $('v-ndvi').textContent = ndvi.toFixed(2);
+
+  const cardTemp = $('card-temp');
+  cardTemp.className = 'card active' + (temp > 38 ? ' crit-state' : '');
+
+  const cardSolo = $('card-solo');
+  cardSolo.className = 'card active' + (solo < 30 ? ' warn-state' : '');
+
+  const cardNdvi = $('card-ndvi');
+  cardNdvi.className = 'card active' + (ndvi < 0.35 ? ' crit-state' : ndvi < 0.50 ? ' warn-state' : '');
+  $('card-umar').className = 'card active';
+
+  /* ndvi bar */
+  const pct = Math.min(ndvi * 100, 100);
+  const fill = $('ndvi-fill');
+  fill.style.width = pct + '%';
+  fill.style.background = ndviColor(ndvi);
+  $('ndvi-interp').textContent = ndviInterp(ndvi);
+  const nb = $('ndvi-big');
+  nb.textContent = ndvi.toFixed(3);
+  nb.style.color = ndviColor(ndvi);
+
+  /* alert */
+  const ab = $('alert-box');
+  const abadge = $('alert-badge');
+  const causes = d.causas ?? [];
+
+  if (al) {
+    ab.className = 'alert-section active-alert';
+    abadge.className = 'badge crit';
+    abadge.textContent = `⚠ ${nl}`;
+    $('alert-causes').textContent = causes.length ? 'Causas: ' + causes.join(', ') : 'Alerta ativo';
+    $('btn-reset').disabled = false;
+  } else {
+    ab.className = 'alert-section';
+    abadge.className = 'badge ok';
+    abadge.textContent = 'Nenhum';
+    $('alert-causes').textContent = 'Sistema operando normalmente';
+    $('btn-reset').disabled = true;
+  }
+}
+
+/* ── FETCH STATUS ── */
+async function fetchStatus() {
+  if (simMode) { simularStep(); return; }
+  if (!baseUrl) return;
+  try {
+    const res = await fetch(`${baseUrl}/api/status`, { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    /* also fetch alerta for causes */
+    let causas = [];
+    try {
+      const ar = await fetch(`${baseUrl}/api/alerta`, { signal: AbortSignal.timeout(2000) });
+      const ad = await ar.json();
+      causas = ad.causas ?? [];
+    } catch(_){}
+
+    setOnline();
+    render({ ...data, causas });
+  } catch (e) {
+    setOffline(e.message);
+  }
+}
+
+/* ── CONNECTION STATE ── */
+function setOnline() {
+  if (!connected) {
+    addLog('✓ Conexão estabelecida com ESP32', 'ok');
+    connected = true;
+  }
+  $('conn-dot').className = 'dot online';
+  $('conn-label').textContent = 'Conectado · ' + baseUrl.replace('http://','');
+}
+
+function setOffline(reason) {
+  if (connected) {
+    addLog(`✗ Conexão perdida: ${reason}`, 'danger');
+    connected = false;
+  }
+  $('conn-dot').className = 'dot error';
+  $('conn-label').textContent = 'Sem sinal · ' + (reason || 'timeout');
+}
+
+/* ── CONNECT ── */
+function conectar() {
+  const ip = $('ip-input').value.trim();
+  if (!ip) { addLog('⚠ Digite um IP válido', 'warn'); return; }
+
+  simMode = false;
+  baseUrl = ip.startsWith('http') ? ip : `http://${ip}`;
+  connected = false;
+  addLog(`→ Conectando a ${baseUrl}…`, 'warn');
+  $('conn-dot').className = 'dot warn';
+  $('conn-label').textContent = 'Conectando…';
+
+  if (polling) clearInterval(polling);
+  fetchStatus();
+  polling = setInterval(fetchStatus, 2000);
+}
+
+/* ── RESET ALERTA ── */
+async function resetarAlerta() {
+  if (simMode) { addLog('↺ Alerta resetado (modo demo)', 'ok'); return; }
+  try {
+    await fetch(`${baseUrl}/api/alerta/reset`, { method: 'POST', signal: AbortSignal.timeout(3000) });
+    addLog('↺ Alerta resetado com sucesso', 'ok');
+    fetchStatus();
+  } catch (e) {
+    addLog(`✗ Erro ao resetar: ${e.message}`, 'danger');
+  }
+}
+
+/* ── DEMO / SIMULATION ── */
+let simData = {
+  temperatura_c: 27,
+  umidade_ar_pct: 65,
+  umidade_solo_pct: 60,
+  ndvi_estimado: 0.72,
+  status_campo: 'Saudavel',
+  alerta_ativo: false,
+  nivel_alerta: 'Nenhum',
+  uptime_ms: 0,
+  causas: []
+};
+
+function simularStep() {
+  simT += 2000;
+  simData.uptime_ms = simT;
+
+  /* simulate oscillation */
+  const t = simT / 1000;
+  simData.temperatura_c   = +(27 + 12 * Math.sin(t * 0.04)).toFixed(1);
+  simData.umidade_ar_pct  = +(60 + 20 * Math.sin(t * 0.03 + 1)).toFixed(1);
+  simData.umidade_solo_pct = +(50 + 40 * Math.sin(t * 0.025 + 2)).toFixed(0);
+
+  /* ndvi calc mirrors firmware */
+  const solo = simData.umidade_solo_pct / 100;
+  const fator = simData.temperatura_c > 35 ? 0.70 : simData.temperatura_c > 30 ? 0.85 : 1.0;
+  simData.ndvi_estimado = +Math.min(Math.max(solo * fator, 0), 1).toFixed(3);
+
+  if      (simData.ndvi_estimado >= 0.50) { simData.status_campo = 'Saudavel';   simData.alerta_ativo = false; simData.nivel_alerta = 'Nenhum'; simData.causas = []; }
+  else if (simData.ndvi_estimado >= 0.35) { simData.status_campo = 'Observacao'; simData.alerta_ativo = false; simData.nivel_alerta = 'Nenhum'; simData.causas = ['ndvi_moderado']; }
+  else                                    { simData.status_campo = 'Critico';    simData.alerta_ativo = true;  simData.nivel_alerta = 'Critico'; simData.causas = ['ndvi_baixo', simData.temperatura_c > 38 ? 'temperatura_alta' : null, simData.umidade_solo_pct < 30 ? 'solo_seco' : null].filter(Boolean); }
+
+  render({ ...simData });
+  if (simData.alerta_ativo) addLog(`🚨 Alerta Crítico — NDVI ${simData.ndvi_estimado}`, 'danger');
+  else if (simData.status_campo === 'Observacao') addLog(`⚠ Observação — NDVI ${simData.ndvi_estimado}`, 'warn');
+}
+
+function simular() {
+  simMode = true;
+  baseUrl = '';
+  connected = false;
+  if (polling) clearInterval(polling);
+  $('conn-dot').className = 'dot online';
+  $('conn-label').textContent = 'Modo Demo (simulado)';
+  addLog('▶ Modo demo iniciado — dados simulados', 'ok');
+  simularStep();
+  polling = setInterval(simularStep, 2000);
+}
+
+/* ── INIT ── */
+$('ts').textContent = now();
+addLog('AgroVision Dashboard inicializado', 'ok');
+addLog('Configure o IP do ESP32 ou use o modo Demo', 'warn');
+</script>
+</body>
+</html>

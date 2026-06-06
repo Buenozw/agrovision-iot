@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "author": "AgroVision — FIAP Global Solution 2026/1",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-esp32-devkit-v1",
+      "id": "esp32",
+      "top": 80,
+      "left": 160,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": 0,
+      "left": 40,
+      "attrs": { "temperature": "28", "humidity": "65" }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot1",
+      "top": 240,
+      "left": 0,
+      "attrs": { "label": "Umidade Solo (%)", "value": "128" },
+      "rotate": 0
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led-verde",
+      "top": 0,
+      "left": 400,
+      "attrs": { "color": "green", "label": "Status OK" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led-vermelho",
+      "top": 80,
+      "left": 400,
+      "attrs": { "color": "red", "label": "Alerta Praga" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 16,
+      "left": 380,
+      "attrs": { "value": "220" },
+      "rotate": 90
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 96,
+      "left": 380,
+      "attrs": { "value": "220" },
+      "rotate": 90
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd1",
+      "top": 340,
+      "left": 80,
+      "attrs": {
+        "background": "blue",
+        "color": "white",
+        "i2cAddress": "0x27"
+      }
+    }
+  ],
+  "connections": [
+    [ "esp32:3V3",  "dht1:VCC",  "red",   [] ],
+    [ "esp32:GND",  "dht1:GND",  "black", [] ],
+    [ "esp32:D4",   "dht1:SDA",  "green", [] ],
+
+    [ "esp32:3V3",  "pot1:VCC",  "red",   [] ],
+    [ "esp32:GND",  "pot1:GND",  "black", [] ],
+    [ "esp32:D34",  "pot1:SIG",  "orange",[] ],
+
+    [ "esp32:D26",  "r1:1",      "green", [] ],
+    [ "r1:2",       "led-verde:A","green",[] ],
+    [ "esp32:GND",  "led-verde:K","black",[] ],
+
+    [ "esp32:D27",  "r2:1",      "red",   [] ],
+    [ "r2:2",       "led-vermelho:A","red",[] ],
+    [ "esp32:GND",  "led-vermelho:K","black",[] ],
+
+    [ "esp32:D21",  "lcd1:SDA",  "blue",  [] ],
+    [ "esp32:D22",  "lcd1:SCL",  "yellow",[] ],
+    [ "esp32:3V3",  "lcd1:VCC",  "red",   [] ],
+    [ "esp32:GND",  "lcd1:GND",  "black", [] ]
+  ],
+  "serialMonitor": {
+    "display": "terminal",
+    "newline": "lf"
+  }
+}
