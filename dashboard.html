@@ -5,552 +5,782 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>AgroVision — Dashboard IoT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
 <style>
-  /* ── RESET & BASE ── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg:        #050e07;
-    --surface:   #0c1f11;
-    --surface2:  #112818;
-    --border:    #1e4029;
-    --accent:    #39ff6e;
-    --accent2:   #00d4aa;
-    --warn:      #f5a623;
-    --danger:    #ff3b5c;
-    --text:      #c8f0d2;
-    --muted:     #4d7a5a;
-    --font-head: 'Syne', sans-serif;
-    --font-mono: 'Space Mono', monospace;
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: var(--font-mono);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ── NOISE OVERLAY ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none; z-index: 0; opacity: .5;
-  }
-
-  /* ── SCAN LINE ── */
-  body::after {
-    content: '';
-    position: fixed; inset: 0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,80,.012) 2px, rgba(0,255,80,.012) 4px);
-    pointer-events: none; z-index: 0;
-  }
-
-  /* ── LAYOUT ── */
-  .wrap { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px 48px; }
-
-  /* ── HEADER ── */
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 32px 0 28px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 28px;
-    flex-wrap: wrap; gap: 16px;
-  }
-
-  .logo-group { display: flex; align-items: center; gap: 14px; }
-
-  .logo-mark {
-    width: 48px; height: 48px;
-    background: var(--accent);
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    box-shadow: 0 0 24px rgba(57,255,110,.4);
-  }
-
-  h1 {
-    font-family: var(--font-head);
-    font-weight: 800; font-size: 1.7rem;
-    letter-spacing: -1px;
-    color: #fff;
-  }
-  h1 span { color: var(--accent); }
-
-  .tagline { font-size: .65rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
-
-  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-
-  /* ── CONNECTION PANEL ── */
-  .conn-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px 20px;
-    margin-bottom: 24px;
-    display: flex; align-items: center; flex-wrap: wrap; gap: 14px;
-  }
-
-  .conn-panel label { font-size: .7rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
-
-  .conn-input-group { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 260px; }
-
-  .conn-input-group input {
-    flex: 1;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--accent);
-    font-family: var(--font-mono);
-    font-size: .85rem;
-    padding: 9px 14px;
-    outline: none;
-    transition: border-color .2s;
-  }
-  .conn-input-group input:focus { border-color: var(--accent); }
-  .conn-input-group input::placeholder { color: var(--muted); }
-
-  .btn {
-    padding: 9px 18px;
-    border-radius: 8px;
-    border: none;
-    font-family: var(--font-mono);
-    font-size: .8rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all .2s;
-    letter-spacing: .5px;
-  }
-
-  .btn-connect {
-    background: var(--accent);
-    color: #050e07;
-  }
-  .btn-connect:hover { box-shadow: 0 0 16px rgba(57,255,110,.5); transform: translateY(-1px); }
-  .btn-connect:disabled { opacity: .4; cursor: default; transform: none; box-shadow: none; }
-
-  .btn-danger {
-    background: transparent;
-    color: var(--danger);
-    border: 1px solid var(--danger);
-  }
-  .btn-danger:hover { background: rgba(255,59,92,.1); }
-
-  .btn-warn {
-    background: transparent;
-    color: var(--warn);
-    border: 1px solid var(--warn);
-  }
-  .btn-warn:hover { background: rgba(245,166,35,.08); }
-
-  /* ── STATUS BAR ── */
-  .status-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 10px;
-    margin-bottom: 24px;
-  }
-
-  .conn-status {
-    display: flex; align-items: center; gap: 8px;
-    font-size: .75rem; color: var(--muted);
-  }
-
-  .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--muted);
-    transition: background .4s, box-shadow .4s;
-  }
-  .dot.online { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 2s infinite; }
-  .dot.error  { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
-  .dot.warn   { background: var(--warn);   box-shadow: 0 0 8px var(--warn); }
-
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-
-  .timestamp { font-size: .65rem; color: var(--muted); font-family: var(--font-mono); }
-
-  /* ── CAMPO BADGE ── */
-  .badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 5px 14px; border-radius: 20px;
-    font-size: .72rem; font-weight: 700; letter-spacing: .5px;
-    text-transform: uppercase;
-    border: 1px solid;
-  }
-  .badge.ok     { color: var(--accent); border-color: var(--accent); background: rgba(57,255,110,.08); }
-  .badge.obs    { color: var(--warn);   border-color: var(--warn);   background: rgba(245,166,35,.08); }
-  .badge.crit   { color: var(--danger); border-color: var(--danger); background: rgba(255,59,92,.08); animation: blink .8s infinite; }
-  .badge.idle   { color: var(--muted);  border-color: var(--border);  background: transparent; }
-
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.5} }
-
-  /* ── CARDS GRID ── */
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px; }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 22px 20px;
-    position: relative; overflow: hidden;
-    transition: border-color .3s, box-shadow .3s;
-  }
-  .card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: var(--accent);
-    transform: scaleX(0); transform-origin: left;
-    transition: transform .5s;
-  }
-  .card.active::before { transform: scaleX(1); }
-  .card.warn-state  { border-color: var(--warn);   box-shadow: 0 0 20px rgba(245,166,35,.1); }
-  .card.crit-state  { border-color: var(--danger);  box-shadow: 0 0 20px rgba(255,59,92,.12); animation: shake .3s; }
-
-  @keyframes shake {
-    0%,100%{transform:translateX(0)}
-    25%{transform:translateX(-4px)}
-    75%{transform:translateX(4px)}
-  }
-
-  .card-icon  { font-size: 1.4rem; margin-bottom: 10px; }
-  .card-value { font-family: var(--font-head); font-size: 2.4rem; font-weight: 800; color: #fff; line-height: 1; }
-  .card-unit  { font-size: .75rem; color: var(--muted); margin-left: 3px; }
-  .card-label { font-size: .6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 8px; }
-
-  .card-glow {
-    position: absolute; bottom: -20px; right: -20px;
-    width: 80px; height: 80px; border-radius: 50%;
-    background: var(--accent); opacity: .04; filter: blur(20px);
-  }
-
-  /* ── NDVI BAR ── */
-  .ndvi-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 24px;
-  }
-
-  .section-title {
-    font-family: var(--font-head);
-    font-size: .7rem; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 2px;
-    color: var(--muted); margin-bottom: 18px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .section-title::after {
-    content: ''; flex: 1; height: 1px; background: var(--border);
-  }
-
-  .ndvi-track { position: relative; height: 28px; background: var(--bg); border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }
-
-  .ndvi-zones {
-    position: absolute; inset: 0; display: flex;
-  }
-  .zone-crit  { background: rgba(255,59,92,.12); flex: 35; }
-  .zone-obs   { background: rgba(245,166,35,.12); flex: 15; }
-  .zone-ok    { background: rgba(57,255,110,.07); flex: 50; }
-
-  .ndvi-fill {
-    position: absolute; top: 0; left: 0; height: 100%;
-    border-radius: 14px;
-    transition: width 1s cubic-bezier(.4,0,.2,1), background .5s;
-    background: var(--accent);
-    min-width: 4px;
-  }
-
-  .ndvi-markers {
-    display: flex; justify-content: space-between;
-    margin-top: 8px; font-size: .6rem; color: var(--muted);
-  }
-
-  .ndvi-meta {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: 14px; flex-wrap: wrap; gap: 8px;
-  }
-
-  .ndvi-interp { font-size: .8rem; color: var(--text); }
-  .ndvi-value-big {
-    font-family: var(--font-head);
-    font-size: 2.2rem; font-weight: 800; color: var(--accent);
-    line-height: 1;
-  }
-
-  /* ── ALERT BOX ── */
-  .alert-section {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 18px 24px;
-    margin-bottom: 24px;
-    flex-wrap: wrap; gap: 12px;
-    transition: border-color .3s;
-  }
-  .alert-section.active-alert { border-color: var(--danger); background: rgba(255,59,92,.04); }
-
-  .alert-info { display: flex; align-items: center; gap: 12px; }
-  .alert-label { font-size: .65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-  .alert-causes { font-size: .7rem; color: var(--muted); margin-top: 3px; }
-
-  /* ── LOG ── */
-  .log-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px 24px;
-    margin-bottom: 24px;
-  }
-
-  #log-list {
-    max-height: 180px;
-    overflow-y: auto;
-    display: flex; flex-direction: column; gap: 4px;
-    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
-  }
-
-  .log-entry {
-    font-size: .68rem; font-family: var(--font-mono);
-    color: var(--muted);
-    padding: 4px 0;
-    border-bottom: 1px solid rgba(30,64,41,.4);
-    display: flex; gap: 10px;
-    animation: fadeIn .3s;
-  }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
-
-  .log-entry.ok     .log-msg { color: var(--accent); }
-  .log-entry.warn   .log-msg { color: var(--warn); }
-  .log-entry.danger .log-msg { color: var(--danger); }
-  .log-time { color: var(--border); flex-shrink: 0; }
-
-  /* ── WOKWI GUIDE ── */
-  .guide-section {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 24px;
-  }
-
-  .guide-steps { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
-
-  .guide-step {
-    display: flex; gap: 14px; align-items: flex-start;
-  }
-
-  .step-num {
-    width: 28px; height: 28px; flex-shrink: 0;
-    background: var(--border); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: .7rem; font-weight: 700; color: var(--accent);
-    font-family: var(--font-head);
-  }
-
-  .step-body { font-size: .75rem; color: var(--text); line-height: 1.6; }
-  .step-body code {
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: 4px; padding: 1px 6px;
-    font-family: var(--font-mono); font-size: .72rem; color: var(--accent2);
-  }
-
-  /* ── ENDPOINTS TABLE ── */
-  .endpoints { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: .72rem; }
-  .endpoints th { color: var(--muted); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); font-weight: 400; letter-spacing: 1px; text-transform: uppercase; font-size: .6rem; }
-  .endpoints td { padding: 10px 12px; border-bottom: 1px solid rgba(30,64,41,.4); color: var(--text); }
-  .endpoints tr:hover td { background: rgba(57,255,110,.03); }
-  .method { color: var(--accent); font-weight: 700; }
-  .route  { color: var(--accent2); }
-
-  /* ── FOOTER ── */
-  footer {
-    text-align: center; font-size: .6rem; color: var(--border);
-    padding-top: 24px; border-top: 1px solid var(--border);
-    letter-spacing: 1px; text-transform: uppercase;
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 600px) {
-    h1 { font-size: 1.3rem; }
-    .card-value { font-size: 2rem; }
-    .conn-panel { flex-direction: column; }
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+:root {
+  --bg:        #EDEEE8;
+  --sidebar:   #FFFFFF;
+  --card:      #FFFFFF;
+  --card2:     #3D5A3E;
+  --accent:    #3D5A3E;
+  --accent-lt: #EAF0E5;
+  --accent-md: #6B8F6C;
+  --warn:      #C47C2B;
+  --warn-lt:   #FDF3E6;
+  --danger:    #B84040;
+  --danger-lt: #FDEAEA;
+  --text:      #1C2320;
+  --text2:     #5A6460;
+  --text3:     #9AA49F;
+  --border:    #E2E5E0;
+  --shadow:    0 2px 12px rgba(0,0,0,.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.10);
+  --r:         16px;
+  --r-sm:      10px;
+  --font:      'DM Sans', sans-serif;
+  --font-ser:  'DM Serif Display', serif;
+}
+ 
+html, body { height: 100%; }
+ 
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+}
+ 
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 72px;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0;
+  gap: 8px;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+}
+ 
+.sidebar-logo {
+  width: 40px; height: 40px;
+  background: var(--accent);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+}
+ 
+.sidebar-logo svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; }
+ 
+.nav-item {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background .15s;
+  color: var(--text3);
+}
+.nav-item:hover { background: var(--accent-lt); color: var(--accent); }
+.nav-item.active { background: var(--accent-lt); color: var(--accent); }
+.nav-item svg { width: 20px; height: 20px; }
+ 
+.sidebar-spacer { flex: 1; }
+ 
+/* ── MAIN ── */
+.main {
+  margin-left: 72px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+}
+ 
+/* ── TOPBAR ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px;
+  background: transparent;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+ 
+.topbar-left h2 {
+  font-family: var(--font-ser);
+  font-size: 1.55rem;
+  color: var(--text);
+  font-weight: 400;
+  letter-spacing: -.3px;
+}
+.topbar-left p {
+  font-size: .8rem;
+  color: var(--text3);
+  margin-top: 2px;
+}
+ 
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+ 
+.search-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 8px 16px;
+  min-width: 180px;
+}
+.search-box input {
+  border: none; background: transparent;
+  font-family: var(--font); font-size: .8rem;
+  color: var(--text); outline: none; width: 120px;
+}
+.search-box input::placeholder { color: var(--text3); }
+.search-box svg { width: 15px; height: 15px; color: var(--text3); flex-shrink: 0; }
+ 
+.icon-btn {
+  width: 36px; height: 36px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background .15s;
+  position: relative;
+}
+.icon-btn:hover { background: var(--accent-lt); }
+.icon-btn svg { width: 16px; height: 16px; color: var(--text2); }
+ 
+.notif-dot {
+  position: absolute; top: 7px; right: 7px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--danger);
+  border: 2px solid var(--card);
+}
+ 
+.conn-pill {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 6px 14px 6px 8px;
+  font-size: .75rem;
+  color: var(--text2);
+  cursor: pointer;
+  gap: 8px;
+}
+.conn-pill input {
+  border: none; background: transparent;
+  font-family: var(--font); font-size: .75rem;
+  color: var(--accent); outline: none; width: 100px;
+}
+.conn-pill input::placeholder { color: var(--text3); }
+ 
+.btn-sm {
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: none;
+  font-family: var(--font);
+  font-size: .75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #2d4430; }
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--accent-lt); color: var(--accent); border-color: var(--accent); }
+ 
+/* ── CONTENT ── */
+.content {
+  flex: 1;
+  padding: 0 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+ 
+/* ── TOP ROW — small stat cards ── */
+.top-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+ 
+.stat-card {
+  background: var(--card);
+  border-radius: var(--r);
+  padding: 20px 22px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  transition: box-shadow .2s, transform .2s;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+ 
+.stat-card.dark {
+  background: var(--card2);
+  color: #fff;
+}
+ 
+.stat-label {
+  font-size: .7rem;
+  color: var(--text3);
+  font-weight: 500;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.stat-card.dark .stat-label { color: rgba(255,255,255,.55); }
+ 
+.stat-value {
+  font-family: var(--font-ser);
+  font-size: 1.9rem;
+  color: var(--text);
+  line-height: 1;
+}
+.stat-card.dark .stat-value { color: #fff; }
+ 
+.stat-unit {
+  font-family: var(--font);
+  font-size: .85rem;
+  font-weight: 400;
+  color: var(--text3);
+  margin-left: 3px;
+}
+.stat-card.dark .stat-unit { color: rgba(255,255,255,.55); }
+ 
+.stat-sub {
+  font-size: .72rem;
+  color: var(--text3);
+  margin-top: 4px;
+  display: flex; align-items: center; gap: 4px;
+}
+.stat-card.dark .stat-sub { color: rgba(255,255,255,.55); }
+ 
+.stat-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px; border-radius: 20px;
+  font-size: .65rem; font-weight: 600;
+}
+.badge-ok   { background: var(--accent-lt); color: var(--accent); }
+.badge-warn { background: var(--warn-lt);   color: var(--warn); }
+.badge-crit { background: var(--danger-lt); color: var(--danger); }
+.badge-idle { background: var(--bg); color: var(--text3); }
+ 
+.stat-chart {
+  width: 64px; height: 36px; flex-shrink: 0;
+}
+ 
+/* ── MIDDLE ROW ── */
+.mid-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 340px;
+  gap: 14px;
+}
+ 
+/* ── SECTION CARD ── */
+.section-card {
+  background: var(--card);
+  border-radius: var(--r);
+  padding: 22px 24px;
+  box-shadow: var(--shadow);
+}
+ 
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text);
+  display: flex; align-items: center; gap: 6px;
+}
+.card-title .dot-live {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+ 
+.card-action {
+  font-size: .7rem; color: var(--text3);
+  cursor: pointer; display: flex; align-items: center; gap: 4px;
+}
+.card-action:hover { color: var(--accent); }
+ 
+/* ── NDVI BAR ── */
+.ndvi-track {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.ndvi-zone-crit { position: absolute; left: 0; top: 0; bottom: 0; width: 35%; background: rgba(184,64,64,.18); }
+.ndvi-zone-obs  { position: absolute; left: 35%; top: 0; bottom: 0; width: 15%; background: rgba(196,124,43,.18); }
+.ndvi-zone-ok   { position: absolute; left: 50%; top: 0; bottom: 0; right: 0;  background: rgba(61,90,62,.1); }
+.ndvi-fill {
+  position: absolute; top: 0; left: 0; bottom: 0;
+  border-radius: 5px;
+  transition: width 1s cubic-bezier(.4,0,.2,1), background .5s;
+  background: var(--accent);
+  min-width: 6px;
+}
+.ndvi-labels {
+  display: flex; justify-content: space-between;
+  font-size: .62rem; color: var(--text3);
+  margin-top: 4px;
+}
+ 
+.ndvi-big-row {
+  display: flex; align-items: baseline; gap: 8px;
+  margin: 16px 0 4px;
+}
+.ndvi-number {
+  font-family: var(--font-ser);
+  font-size: 2.8rem;
+  color: var(--text);
+  line-height: 1;
+}
+.ndvi-interp {
+  font-size: .78rem;
+  color: var(--text2);
+  line-height: 1.4;
+  flex: 1;
+}
+ 
+/* ── MINI SPARKLINE ── */
+.sparkline { width: 100%; height: 48px; }
+ 
+/* ── STATUS CHIP ── */
+.status-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 20px;
+  font-size: .72rem; font-weight: 600;
+  border: 1px solid;
+}
+.chip-ok   { color: var(--accent);  border-color: rgba(61,90,62,.3);  background: var(--accent-lt); }
+.chip-obs  { color: var(--warn);    border-color: rgba(196,124,43,.3); background: var(--warn-lt); }
+.chip-crit { color: var(--danger);  border-color: rgba(184,64,64,.3);  background: var(--danger-lt); animation: chipblink .8s infinite; }
+.chip-idle { color: var(--text3);   border-color: var(--border);       background: var(--bg); }
+@keyframes chipblink { 0%,100%{opacity:1} 50%{opacity:.6} }
+ 
+/* ── ALERT CARD ── */
+.alert-card {
+  background: var(--card);
+  border-radius: var(--r);
+  padding: 22px 24px;
+  box-shadow: var(--shadow);
+}
+.alert-card.active { border: 1px solid rgba(184,64,64,.25); background: #FFFAFA; }
+ 
+.alert-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+ 
+.alert-causes-text {
+  font-size: .75rem; color: var(--text2);
+  margin-top: 6px; margin-bottom: 16px;
+  line-height: 1.5;
+}
+ 
+.btn-reset {
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--danger);
+  background: transparent;
+  color: var(--danger);
+  font-family: var(--font);
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-reset:hover:not(:disabled) { background: var(--danger); color: #fff; }
+.btn-reset:disabled { opacity: .35; cursor: default; }
+ 
+/* ── LOG ── */
+.log-list {
+  display: flex; flex-direction: column; gap: 2px;
+  max-height: 200px; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.log-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .7rem;
+  animation: slideIn .25s ease;
+}
+@keyframes slideIn { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
+.log-time { color: var(--text3); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.log-msg  { color: var(--text2); }
+.log-row.ok   .log-msg { color: var(--accent); }
+.log-row.warn .log-msg { color: var(--warn); }
+.log-row.crit .log-msg { color: var(--danger); }
+ 
+/* ── BOTTOM ROW ── */
+.bot-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+ 
+/* ── CONNECTION SECTION ── */
+.conn-section {
+  background: var(--card);
+  border-radius: var(--r);
+  padding: 22px 24px;
+  box-shadow: var(--shadow);
+}
+ 
+.ip-row {
+  display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+}
+.ip-input {
+  flex: 1; min-width: 140px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 9px 14px;
+  font-family: var(--font); font-size: .82rem;
+  color: var(--accent); outline: none;
+  transition: border-color .15s;
+}
+.ip-input:focus { border-color: var(--accent); }
+.ip-input::placeholder { color: var(--text3); }
+ 
+.conn-state {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .72rem; color: var(--text3);
+  margin-top: 10px;
+}
+.dot-st {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--text3);
+  transition: background .3s, box-shadow .3s;
+  flex-shrink: 0;
+}
+.dot-st.online { background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: pulse 2s infinite; }
+.dot-st.error  { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
+.dot-st.warn   { background: var(--warn);   box-shadow: 0 0 6px var(--warn); }
+ 
+/* ── ENDPOINTS TABLE ── */
+.ep-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+.ep-table th {
+  text-align: left; font-size: .63rem; font-weight: 600;
+  color: var(--text3); text-transform: uppercase; letter-spacing: .5px;
+  padding: 0 0 8px 0; border-bottom: 1px solid var(--border);
+}
+.ep-table td {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .75rem; color: var(--text2);
+  vertical-align: middle;
+}
+.ep-table tr:last-child td { border-bottom: none; }
+.ep-table tr:hover td { background: var(--accent-lt); }
+.ep-method {
+  display: inline-block;
+  padding: 2px 8px; border-radius: 5px;
+  font-size: .65rem; font-weight: 700;
+  background: var(--accent-lt); color: var(--accent);
+  font-variant: small-caps; letter-spacing: .5px;
+}
+.ep-method.post { background: var(--warn-lt); color: var(--warn); }
+.ep-route { color: var(--accent-md); font-weight: 500; margin-left: 4px; }
+ 
+/* ── GUIDE STEPS ── */
+.guide-steps { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.guide-step { display: flex; gap: 10px; align-items: flex-start; }
+.step-num {
+  width: 22px; height: 22px; flex-shrink: 0;
+  background: var(--accent); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .65rem; font-weight: 700; color: #fff;
+}
+.step-body { font-size: .74rem; color: var(--text2); line-height: 1.55; padding-top: 1px; }
+.step-body code {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 4px; padding: 0 5px;
+  font-size: .7rem; color: var(--accent-md);
+}
+ 
+/* ── UPTIME ROW ── */
+.uptime-row {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: .72rem; color: var(--text3);
+  margin-top: 4px;
+}
+ 
+/* ── SVG MINI CHARTS ── */
+.spark-path { fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+ 
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .mid-row { grid-template-columns: 1fr 1fr; }
+  .mid-row .alert-card { grid-column: span 2; }
+  .top-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .sidebar { width: 56px; }
+  .main { margin-left: 56px; }
+  .content { padding: 0 16px 24px; }
+  .topbar { padding: 16px; }
+  .top-row { grid-template-columns: 1fr 1fr; }
+  .mid-row, .bot-row { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-
-  <!-- HEADER -->
-  <header>
-    <div class="logo-group">
-      <div class="logo-mark">🛰</div>
-      <div>
-        <h1>Agro<span>Vision</span></h1>
-        <div class="tagline">IoT Dashboard · ESP32 · Wokwi Integration</div>
+ 
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+  </div>
+  <div class="nav-item active" title="Dashboard">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+  </div>
+  <div class="nav-item" title="Sensores">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+  </div>
+  <div class="nav-item" title="Alertas">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+  </div>
+  <div class="nav-item" title="Mapa">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+  </div>
+  <div class="nav-item" title="Talhões">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+  </div>
+  <div class="sidebar-spacer"></div>
+  <div class="nav-item" title="Configurações">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </div>
+  <div class="nav-item" title="Sair">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+  </div>
+</aside>
+ 
+<!-- MAIN -->
+<div class="main">
+ 
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2>Olá, Talhão A1! 🌿</h2>
+      <p>Monitoramento em tempo real · ESP32 · Wokwi Integration</p>
+    </div>
+    <div class="topbar-right">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Pesquisar..."/>
+      </div>
+      <div class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot" id="notif-dot" style="display:none"></span>
+      </div>
+      <div class="icon-btn" style="background:var(--accent);border-color:var(--accent);" title="Dispositivo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="3"/></svg>
       </div>
     </div>
-    <div class="header-right">
-      <span class="timestamp" id="ts">--:--:--</span>
-      <span class="badge idle" id="campo-badge">⬤ Aguardando</span>
-    </div>
-  </header>
-
-  <!-- CONNECTION PANEL -->
-  <div class="conn-panel">
-    <div style="flex:1;min-width:260px;">
-      <label>Endereço IP do ESP32 (Wokwi)</label>
-      <div class="conn-input-group" style="margin-top:8px;">
-        <input type="text" id="ip-input" placeholder="Ex: 10.0.0.2" value=""/>
-        <button class="btn btn-connect" id="btn-connect" onclick="conectar()">Conectar</button>
-        <button class="btn btn-warn" onclick="simular()">Demo</button>
+  </div>
+ 
+  <!-- CONTENT -->
+  <div class="content">
+ 
+    <!-- TOP ROW — 4 stat cards -->
+    <div class="top-row">
+      <!-- Temperatura -->
+      <div class="stat-card" id="card-temp">
+        <div>
+          <div class="stat-label">Temperatura</div>
+          <div><span class="stat-value" id="v-temp">--</span><span class="stat-unit">°C</span></div>
+          <div class="stat-sub"><span class="stat-badge badge-idle" id="badge-temp">Aguardando</span></div>
+        </div>
+        <svg class="stat-chart sparkline" id="spark-temp" viewBox="0 0 64 36" preserveAspectRatio="none">
+          <path class="spark-path" id="sp-temp" d="M0,18 L64,18" stroke="var(--text3)"/>
+        </svg>
+      </div>
+ 
+      <!-- Umidade Ar -->
+      <div class="stat-card" id="card-umar">
+        <div>
+          <div class="stat-label">Umidade do Ar</div>
+          <div><span class="stat-value" id="v-umar">--</span><span class="stat-unit">%</span></div>
+          <div class="stat-sub"><span class="stat-badge badge-idle" id="badge-umar">Aguardando</span></div>
+        </div>
+        <svg class="stat-chart sparkline" id="spark-umar" viewBox="0 0 64 36" preserveAspectRatio="none">
+          <path class="spark-path" id="sp-umar" d="M0,18 L64,18" stroke="var(--text3)"/>
+        </svg>
+      </div>
+ 
+      <!-- Umidade Solo -->
+      <div class="stat-card" id="card-solo">
+        <div>
+          <div class="stat-label">Umidade do Solo</div>
+          <div><span class="stat-value" id="v-solo">--</span><span class="stat-unit">%</span></div>
+          <div class="stat-sub"><span class="stat-badge badge-idle" id="badge-solo">Aguardando</span></div>
+        </div>
+        <svg class="stat-chart sparkline" id="spark-solo" viewBox="0 0 64 36" preserveAspectRatio="none">
+          <path class="spark-path" id="sp-solo" d="M0,18 L64,18" stroke="var(--text3)"/>
+        </svg>
+      </div>
+ 
+      <!-- NDVI — dark card -->
+      <div class="stat-card dark" id="card-ndvi">
+        <div>
+          <div class="stat-label">NDVI Estimado</div>
+          <div><span class="stat-value" id="v-ndvi">--</span></div>
+          <div class="stat-sub" id="ndvi-sub-label" style="color:rgba(255,255,255,.55)">Índice de vegetação</div>
+        </div>
+        <svg class="stat-chart sparkline" id="spark-ndvi" viewBox="0 0 64 36" preserveAspectRatio="none">
+          <path class="spark-path" id="sp-ndvi" d="M0,18 L64,18" stroke="rgba(255,255,255,.4)"/>
+        </svg>
       </div>
     </div>
-    <div class="conn-status">
-      <div class="dot" id="conn-dot"></div>
-      <span id="conn-label">Desconectado</span>
-    </div>
-  </div>
-
-  <!-- STATUS BAR -->
-  <div class="status-bar">
-    <div style="display:flex;gap:10px;align-items:center;">
-      <span style="font-size:.65rem;color:var(--muted);">CAMPO:</span>
-      <span class="badge idle" id="status-badge">Aguardando conexão</span>
-    </div>
-    <div style="font-size:.65rem;color:var(--muted);" id="uptime-label">Uptime: --</div>
-  </div>
-
-  <!-- SENSOR CARDS -->
-  <div class="cards">
-    <div class="card" id="card-temp">
-      <div class="card-icon">🌡️</div>
-      <div><span class="card-value" id="v-temp">--</span><span class="card-unit">°C</span></div>
-      <div class="card-label">Temperatura</div>
-      <div class="card-glow"></div>
-    </div>
-    <div class="card" id="card-umar">
-      <div class="card-icon">💧</div>
-      <div><span class="card-value" id="v-umar">--</span><span class="card-unit">%</span></div>
-      <div class="card-label">Umidade do Ar</div>
-      <div class="card-glow"></div>
-    </div>
-    <div class="card" id="card-solo">
-      <div class="card-icon">🌱</div>
-      <div><span class="card-value" id="v-solo">--</span><span class="card-unit">%</span></div>
-      <div class="card-label">Umidade do Solo</div>
-      <div class="card-glow"></div>
-    </div>
-    <div class="card" id="card-ndvi">
-      <div class="card-icon">🛰️</div>
-      <div><span class="card-value" id="v-ndvi">--</span></div>
-      <div class="card-label">NDVI Estimado</div>
-      <div class="card-glow"></div>
-    </div>
-  </div>
-
-  <!-- NDVI BAR -->
-  <div class="ndvi-section">
-    <div class="section-title">Índice NDVI — Saúde da Vegetação</div>
-    <div class="ndvi-track">
-      <div class="ndvi-zones">
-        <div class="zone-crit"></div>
-        <div class="zone-obs"></div>
-        <div class="zone-ok"></div>
-      </div>
-      <div class="ndvi-fill" id="ndvi-fill" style="width:0%"></div>
-    </div>
-    <div class="ndvi-markers">
-      <span>0.0 — Crítico</span>
-      <span>0.35</span>
-      <span>0.50 — Atenção</span>
-      <span>1.0 — Saudável</span>
-    </div>
-    <div class="ndvi-meta">
-      <div class="ndvi-interp" id="ndvi-interp">Aguardando dados do ESP32...</div>
-      <div class="ndvi-value-big" id="ndvi-big">—</div>
-    </div>
-  </div>
-
-  <!-- ALERT -->
-  <div class="alert-section" id="alert-box">
-    <div class="alert-info">
-      <div>
-        <div class="alert-label">Alerta Ativo</div>
-        <div class="alert-causes" id="alert-causes">Nenhuma causa detectada</div>
-      </div>
-      <span class="badge idle" id="alert-badge">Nenhum</span>
-    </div>
-    <button class="btn btn-danger" id="btn-reset" onclick="resetarAlerta()" disabled>Resetar Alerta</button>
-  </div>
-
-  <!-- LOG -->
-  <div class="log-section">
-    <div class="section-title">Log de Eventos</div>
-    <div id="log-list"></div>
-  </div>
-
-  <!-- WOKWI GUIDE -->
-  <div class="guide-section">
-    <div class="section-title">Como conectar ao Wokwi</div>
-    <div class="guide-steps">
-      <div class="guide-step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          Abra o projeto no Wokwi e inicie a simulação clicando em <strong>▶ Start Simulation</strong>.
+ 
+    <!-- MID ROW -->
+    <div class="mid-row">
+ 
+      <!-- NDVI Detail -->
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="dot-live" id="live-dot"></span>
+            Índice NDVI — Saúde da Vegetação
+          </div>
+          <div class="card-action" id="uptime-label">Uptime: --</div>
+        </div>
+ 
+        <div class="ndvi-track">
+          <div class="ndvi-zone-crit"></div>
+          <div class="ndvi-zone-obs"></div>
+          <div class="ndvi-zone-ok"></div>
+          <div class="ndvi-fill" id="ndvi-fill" style="width:0%"></div>
+        </div>
+        <div class="ndvi-labels">
+          <span>0.0 — Crítico</span><span>0.35</span><span>0.50 — Atenção</span><span>1.0 — Saudável</span>
+        </div>
+ 
+        <div class="ndvi-big-row">
+          <div class="ndvi-number" id="ndvi-big">—</div>
+          <div class="ndvi-interp" id="ndvi-interp">Aguardando dados do ESP32...</div>
+        </div>
+ 
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;flex-wrap:wrap;gap:8px;">
+          <div>
+            <div style="font-size:.65rem;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;">Status do Campo</div>
+            <span class="status-chip chip-idle" id="campo-chip">⬤ Aguardando</span>
+          </div>
+          <span class="status-chip chip-idle" id="campo-badge">Aguardando conexão</span>
         </div>
       </div>
-      <div class="guide-step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          No painel do Wokwi, clique em <strong>Network</strong> (ou veja o Serial Monitor) para obter o IP atribuído ao ESP32. O IP geralmente começa com <code>10.0.0.</code> ou <code>192.168.</code>.
+ 
+      <!-- Log de Eventos -->
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title">Log de Eventos</div>
+          <div class="card-action" style="font-size:.65rem;" id="ts">--:--:--</div>
         </div>
+        <div class="log-list" id="log-list"></div>
       </div>
-      <div class="guide-step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          Cole o IP no campo acima e clique em <strong>Conectar</strong>. Este dashboard irá consultar <code>/api/status</code> a cada 2 segundos automaticamente.
+ 
+      <!-- Alert + Reset -->
+      <div class="alert-card" id="alert-box">
+        <div class="card-header" style="margin-bottom:8px;">
+          <div class="card-title">Alerta Ativo</div>
+          <span class="status-chip chip-idle" id="alert-badge">Nenhum</span>
         </div>
-      </div>
-      <div class="guide-step">
-        <div class="step-num">4</div>
-        <div class="step-body">
-          Se estiver testando localmente sem o Wokwi, clique em <strong>Demo</strong> para ver os dados simulados em tempo real.
-        </div>
-      </div>
-      <div class="guide-step">
-        <div class="step-num">5</div>
-        <div class="step-body">
-          ⚠️ Caso o navegador bloqueie a requisição por CORS, abra o Wokwi no mesmo navegador ou use uma extensão como <strong>CORS Unblock</strong>. O firmware já envia os headers <code>Access-Control-Allow-Origin: *</code>.
-        </div>
+        <div class="alert-causes-text" id="alert-causes">Nenhuma causa detectada</div>
+        <button class="btn-reset" id="btn-reset" onclick="resetarAlerta()" disabled>Resetar Alerta</button>
       </div>
     </div>
-
-    <div style="margin-top:20px;">
-      <div class="section-title">Endpoints disponíveis</div>
-      <table class="endpoints">
-        <thead>
-          <tr>
-            <th>Método</th><th>Rota</th><th>Descrição</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td class="method">GET</td><td class="route">/api/status</td><td>JSON completo dos sensores</td></tr>
-          <tr><td class="method">GET</td><td class="route">/api/ndvi</td><td>NDVI estimado e recomendação</td></tr>
-          <tr><td class="method">GET</td><td class="route">/api/alerta</td><td>Alerta atual e causas</td></tr>
-          <tr><td class="method">POST</td><td class="route">/api/alerta/reset</td><td>Reseta o alerta manualmente</td></tr>
-        </tbody>
-      </table>
+ 
+    <!-- BOTTOM ROW -->
+    <div class="bot-row">
+ 
+      <!-- Connection + Guide -->
+      <div class="conn-section">
+        <div class="card-header" style="margin-bottom:4px;">
+          <div class="card-title">Conexão ESP32 (Wokwi)</div>
+          <div class="conn-state">
+            <div class="dot-st" id="conn-dot"></div>
+            <span id="conn-label">Desconectado</span>
+          </div>
+        </div>
+ 
+        <div class="ip-row">
+          <input class="ip-input" type="text" id="ip-input" placeholder="Ex: 10.0.0.2"/>
+          <button class="btn-sm btn-primary" onclick="conectar()">Conectar</button>
+          <button class="btn-sm btn-ghost" onclick="simular()">Demo</button>
+        </div>
+ 
+        <div style="margin-top:20px;">
+          <div style="font-size:.72rem;font-weight:600;color:var(--text);margin-bottom:10px;">Como conectar ao Wokwi</div>
+          <div class="guide-steps">
+            <div class="guide-step">
+              <div class="step-num">1</div>
+              <div class="step-body">Inicie a simulação no Wokwi clicando em <strong>▶ Start Simulation</strong>.</div>
+            </div>
+            <div class="guide-step">
+              <div class="step-num">2</div>
+              <div class="step-body">Veja o IP no Serial Monitor (entre linhas <code>===</code>) ou no LCD do ESP32.</div>
+            </div>
+            <div class="guide-step">
+              <div class="step-num">3</div>
+              <div class="step-body">Cole o IP acima e clique <strong>Conectar</strong>. O dashboard consultará <code>/api/status</code> a cada 2s.</div>
+            </div>
+            <div class="guide-step">
+              <div class="step-num">4</div>
+              <div class="step-body">Sem Wokwi? Clique <strong>Demo</strong> para simular dados em tempo real.</div>
+            </div>
+            <div class="guide-step">
+              <div class="step-num">5</div>
+              <div class="step-body">Se o navegador bloquear por CORS, use a extensão <code>CORS Unblock</code>.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- Endpoints -->
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title">Endpoints Disponíveis</div>
+          <div class="card-action">API REST · Porta 80</div>
+        </div>
+        <table class="ep-table">
+          <thead>
+            <tr><th>Método</th><th>Rota</th><th>Descrição</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="ep-method">GET</span></td><td><span class="ep-route">/api/status</span></td><td>JSON completo dos sensores</td></tr>
+            <tr><td><span class="ep-method">GET</span></td><td><span class="ep-route">/api/ndvi</span></td><td>NDVI estimado e recomendação</td></tr>
+            <tr><td><span class="ep-method">GET</span></td><td><span class="ep-route">/api/alerta</span></td><td>Alerta atual e causas</td></tr>
+            <tr><td><span class="ep-method post">POST</span></td><td><span class="ep-route">/api/alerta/reset</span></td><td>Reseta o alerta manualmente</td></tr>
+          </tbody>
+        </table>
+ 
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+          <div style="font-size:.72rem;font-weight:600;color:var(--text);margin-bottom:4px;">AgroVision IoT</div>
+          <div style="font-size:.7rem;color:var(--text3);line-height:1.5;">FIAP Global Solution 2026/1 · Disruptive Architectures: IoT, IoB & Generative IA · ESP32 · Talhão A1</div>
+        </div>
+      </div>
+ 
     </div>
-  </div>
-
-  <footer>AgroVision IoT · FIAP Global Solution 2026/1 · Disruptive Architectures</footer>
-</div>
-
+  </div><!-- /content -->
+</div><!-- /main -->
+ 
 <script>
 /* ── STATE ── */
 let baseUrl   = '';
@@ -558,124 +788,165 @@ let polling   = null;
 let simMode   = false;
 let simT      = 0;
 let connected = false;
-
-/* ── DOM REFS ── */
+ 
+/* history for sparklines */
+const hist = { temp: [], umar: [], solo: [], ndvi: [] };
+const HIST_MAX = 20;
+ 
 const $ = id => document.getElementById(id);
-
-/* ── UTILS ── */
-function now() {
-  return new Date().toLocaleTimeString('pt-BR');
-}
-
+ 
+function now() { return new Date().toLocaleTimeString('pt-BR'); }
+ 
 function ndviColor(n) {
   if (n >= 0.50) return 'var(--accent)';
   if (n >= 0.35) return 'var(--warn)';
   return 'var(--danger)';
 }
-
 function ndviInterp(n) {
   if (n >= 0.50) return '✅ Vegetação saudável — nenhuma ação necessária.';
   if (n >= 0.35) return '⚠️ Estresse moderado — monitorar próximo ciclo satelital.';
   return '🚨 POSSÍVEL INFESTAÇÃO — acionar missão de drone imediatamente!';
 }
-
-function statusClass(s) {
-  if (s === 'Saudavel' || s === 'Saudável') return 'ok';
-  if (s === 'Observacao' || s === 'Observação') return 'obs';
-  return 'crit';
+function statusChipClass(s) {
+  if (s === 'Saudavel' || s === 'Saudável') return 'chip-ok';
+  if (s === 'Observacao' || s === 'Observação') return 'chip-obs';
+  return 'chip-crit';
 }
-
 function statusLabel(s) {
   if (s === 'Saudavel' || s === 'Saudável') return '⬤ Saudável';
   if (s === 'Observacao' || s === 'Observação') return '◎ Observação';
   return '⚠ Crítico';
 }
-
+ 
+/* ── SPARKLINE ── */
+function buildSparkPath(vals, min, max, w=64, h=36) {
+  if (vals.length < 2) return `M0,${h/2} L${w},${h/2}`;
+  const range = max - min || 1;
+  const pts = vals.map((v, i) => {
+    const x = (i / (vals.length - 1)) * w;
+    const y = h - ((v - min) / range) * h * 0.8 - h * 0.1;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  return 'M' + pts.join(' L');
+}
+ 
+function updateSpark(key, spId, vals, minV, maxV, stroke) {
+  const path = buildSparkPath(vals, minV, maxV);
+  const el = $(spId);
+  if (el) { el.setAttribute('d', path); el.setAttribute('stroke', stroke); }
+}
+ 
 /* ── LOG ── */
 function addLog(msg, type = 'ok') {
   const list  = $('log-list');
   const entry = document.createElement('div');
-  entry.className = `log-entry ${type}`;
+  entry.className = `log-row ${type}`;
   entry.innerHTML = `<span class="log-time">${now()}</span><span class="log-msg">${msg}</span>`;
   list.prepend(entry);
   while (list.children.length > 60) list.removeChild(list.lastChild);
 }
-
+ 
 /* ── RENDER ── */
 function render(d) {
-  const temp = d.temperatura_c ?? 0;
-  const umar = d.umidade_ar_pct ?? 0;
+  const temp = d.temperatura_c    ?? 0;
+  const umar = d.umidade_ar_pct   ?? 0;
   const solo = d.umidade_solo_pct ?? 0;
-  const ndvi = d.ndvi_estimado ?? 0;
-  const st   = d.status_campo ?? 'Critico';
-  const al   = d.alerta_ativo ?? false;
-  const nl   = d.nivel_alerta ?? 'Nenhum';
-  const up   = d.uptime_ms ?? 0;
-
+  const ndvi = d.ndvi_estimado    ?? 0;
+  const st   = d.status_campo     ?? 'Critico';
+  const al   = d.alerta_ativo     ?? false;
+  const nl   = d.nivel_alerta     ?? 'Nenhum';
+  const up   = d.uptime_ms        ?? 0;
+ 
+  /* history */
+  [['temp',temp],['umar',umar],['solo',solo],['ndvi',ndvi]].forEach(([k,v]) => {
+    hist[k].push(v);
+    if (hist[k].length > HIST_MAX) hist[k].shift();
+  });
+ 
   /* timestamp */
   $('ts').textContent = now();
-
+ 
   /* uptime */
   const s = Math.floor(up / 1000);
   $('uptime-label').textContent = `Uptime: ${Math.floor(s/60)}m ${s%60}s`;
-
-  /* campo badge header */
-  const cb = $('campo-badge');
-  cb.className = `badge ${statusClass(st)}`;
-  cb.textContent = statusLabel(st);
-
-  /* status badge */
-  const sb = $('status-badge');
-  sb.className = `badge ${statusClass(st)}`;
-  sb.textContent = statusLabel(st);
-
-  /* cards */
+ 
+  /* values */
   $('v-temp').textContent = temp.toFixed(1);
   $('v-umar').textContent = umar.toFixed(1);
   $('v-solo').textContent = solo.toFixed(0);
   $('v-ndvi').textContent = ndvi.toFixed(2);
-
-  const cardTemp = $('card-temp');
-  cardTemp.className = 'card active' + (temp > 38 ? ' crit-state' : '');
-
-  const cardSolo = $('card-solo');
-  cardSolo.className = 'card active' + (solo < 30 ? ' warn-state' : '');
-
-  const cardNdvi = $('card-ndvi');
-  cardNdvi.className = 'card active' + (ndvi < 0.35 ? ' crit-state' : ndvi < 0.50 ? ' warn-state' : '');
-  $('card-umar').className = 'card active';
-
-  /* ndvi bar */
+ 
+  /* temp badge */
+  const bt = $('badge-temp');
+  if (temp > 38) { bt.textContent = '⚠ Calor crítico'; bt.className = 'stat-badge badge-crit'; }
+  else if (temp > 32) { bt.textContent = '~ Atenção'; bt.className = 'stat-badge badge-warn'; }
+  else { bt.textContent = '✓ Normal'; bt.className = 'stat-badge badge-ok'; }
+ 
+  /* umar badge */
+  const bu = $('badge-umar');
+  if (umar < 40) { bu.textContent = '⚠ Muito seco'; bu.className = 'stat-badge badge-warn'; }
+  else if (umar > 80) { bu.textContent = '⚠ Excesso'; bu.className = 'stat-badge badge-warn'; }
+  else { bu.textContent = '✓ Ideal'; bu.className = 'stat-badge badge-ok'; }
+ 
+  /* solo badge */
+  const bs = $('badge-solo');
+  if (solo < 30) { bs.textContent = '⚠ Solo seco'; bs.className = 'stat-badge badge-warn'; }
+  else if (solo > 85) { bs.textContent = '⚠ Encharcado'; bs.className = 'stat-badge badge-warn'; }
+  else { bs.textContent = '✓ Ideal'; bs.className = 'stat-badge badge-ok'; }
+ 
+  /* ndvi card bg tint */
+  $('ndvi-sub-label').textContent = ndvi >= 0.50 ? 'Vegetação Saudável' : ndvi >= 0.35 ? 'Observação' : 'Crítico';
+ 
+  /* stat card alert states */
+  $('card-temp').style.outline = temp > 38 ? '2px solid var(--danger)' : 'none';
+  $('card-solo').style.outline = solo < 30 ? '2px solid var(--warn)' : 'none';
+ 
+  /* sparklines */
+  updateSpark('temp', 'sp-temp', hist.temp, 15, 45, temp > 38 ? 'var(--danger)' : temp > 32 ? 'var(--warn)' : 'var(--accent-md)');
+  updateSpark('umar', 'sp-umar', hist.umar, 0, 100, umar < 40 || umar > 80 ? 'var(--warn)' : 'var(--accent-md)');
+  updateSpark('solo', 'sp-solo', hist.solo, 0, 100, solo < 30 ? 'var(--warn)' : 'var(--accent-md)');
+  updateSpark('ndvi', 'sp-ndvi', hist.ndvi, 0, 1, 'rgba(255,255,255,.7)');
+ 
+  /* NDVI bar */
   const pct = Math.min(ndvi * 100, 100);
-  const fill = $('ndvi-fill');
-  fill.style.width = pct + '%';
-  fill.style.background = ndviColor(ndvi);
+  $('ndvi-fill').style.width  = pct + '%';
+  $('ndvi-fill').style.background = ndviColor(ndvi);
   $('ndvi-interp').textContent = ndviInterp(ndvi);
   const nb = $('ndvi-big');
   nb.textContent = ndvi.toFixed(3);
   nb.style.color = ndviColor(ndvi);
-
+ 
+  /* status chips */
+  const cc = $('campo-chip');
+  cc.className = `status-chip ${statusChipClass(st)}`;
+  cc.textContent = statusLabel(st);
+ 
+  const cb = $('campo-badge');
+  cb.className = `status-chip ${statusChipClass(st)}`;
+  cb.textContent = statusLabel(st);
+ 
   /* alert */
   const ab = $('alert-box');
   const abadge = $('alert-badge');
   const causes = d.causas ?? [];
-
   if (al) {
-    ab.className = 'alert-section active-alert';
-    abadge.className = 'badge crit';
+    ab.className = 'alert-card active';
+    abadge.className = 'status-chip chip-crit';
     abadge.textContent = `⚠ ${nl}`;
     $('alert-causes').textContent = causes.length ? 'Causas: ' + causes.join(', ') : 'Alerta ativo';
     $('btn-reset').disabled = false;
+    $('notif-dot').style.display = 'block';
   } else {
-    ab.className = 'alert-section';
-    abadge.className = 'badge ok';
+    ab.className = 'alert-card';
+    abadge.className = 'status-chip chip-ok';
     abadge.textContent = 'Nenhum';
-    $('alert-causes').textContent = 'Sistema operando normalmente';
+    $('alert-causes').textContent = 'Sistema operando normalmente.';
     $('btn-reset').disabled = true;
+    $('notif-dot').style.display = 'none';
   }
 }
-
-/* ── FETCH STATUS ── */
+ 
+/* ── FETCH ── */
 async function fetchStatus() {
   if (simMode) { simularStep(); return; }
   if (!baseUrl) return;
@@ -683,59 +954,46 @@ async function fetchStatus() {
     const res = await fetch(`${baseUrl}/api/status`, { signal: AbortSignal.timeout(3000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-
-    /* also fetch alerta for causes */
     let causas = [];
     try {
       const ar = await fetch(`${baseUrl}/api/alerta`, { signal: AbortSignal.timeout(2000) });
       const ad = await ar.json();
       causas = ad.causas ?? [];
     } catch(_){}
-
     setOnline();
     render({ ...data, causas });
   } catch (e) {
     setOffline(e.message);
   }
 }
-
-/* ── CONNECTION STATE ── */
+ 
 function setOnline() {
-  if (!connected) {
-    addLog('✓ Conexão estabelecida com ESP32', 'ok');
-    connected = true;
-  }
-  $('conn-dot').className = 'dot online';
+  if (!connected) { addLog('✓ Conexão estabelecida com ESP32', 'ok'); connected = true; }
+  $('conn-dot').className = 'dot-st online';
   $('conn-label').textContent = 'Conectado · ' + baseUrl.replace('http://','');
+  $('live-dot').style.background = 'var(--accent)';
 }
-
 function setOffline(reason) {
-  if (connected) {
-    addLog(`✗ Conexão perdida: ${reason}`, 'danger');
-    connected = false;
-  }
-  $('conn-dot').className = 'dot error';
+  if (connected) { addLog(`✗ Conexão perdida: ${reason}`, 'crit'); connected = false; }
+  $('conn-dot').className = 'dot-st error';
   $('conn-label').textContent = 'Sem sinal · ' + (reason || 'timeout');
+  $('live-dot').style.background = 'var(--danger)';
 }
-
-/* ── CONNECT ── */
+ 
 function conectar() {
   const ip = $('ip-input').value.trim();
   if (!ip) { addLog('⚠ Digite um IP válido', 'warn'); return; }
-
   simMode = false;
   baseUrl = ip.startsWith('http') ? ip : `http://${ip}`;
   connected = false;
   addLog(`→ Conectando a ${baseUrl}…`, 'warn');
-  $('conn-dot').className = 'dot warn';
+  $('conn-dot').className = 'dot-st warn';
   $('conn-label').textContent = 'Conectando…';
-
   if (polling) clearInterval(polling);
   fetchStatus();
   polling = setInterval(fetchStatus, 2000);
 }
-
-/* ── RESET ALERTA ── */
+ 
 async function resetarAlerta() {
   if (simMode) { addLog('↺ Alerta resetado (modo demo)', 'ok'); return; }
   try {
@@ -743,59 +1001,46 @@ async function resetarAlerta() {
     addLog('↺ Alerta resetado com sucesso', 'ok');
     fetchStatus();
   } catch (e) {
-    addLog(`✗ Erro ao resetar: ${e.message}`, 'danger');
+    addLog(`✗ Erro ao resetar: ${e.message}`, 'crit');
   }
 }
-
-/* ── DEMO / SIMULATION ── */
+ 
+/* ── DEMO ── */
 let simData = {
-  temperatura_c: 27,
-  umidade_ar_pct: 65,
-  umidade_solo_pct: 60,
-  ndvi_estimado: 0.72,
-  status_campo: 'Saudavel',
-  alerta_ativo: false,
-  nivel_alerta: 'Nenhum',
-  uptime_ms: 0,
-  causas: []
+  temperatura_c: 27, umidade_ar_pct: 65, umidade_solo_pct: 60,
+  ndvi_estimado: 0.72, status_campo: 'Saudavel',
+  alerta_ativo: false, nivel_alerta: 'Nenhum', uptime_ms: 0, causas: []
 };
-
+ 
 function simularStep() {
   simT += 2000;
   simData.uptime_ms = simT;
-
-  /* simulate oscillation */
   const t = simT / 1000;
-  simData.temperatura_c   = +(27 + 12 * Math.sin(t * 0.04)).toFixed(1);
-  simData.umidade_ar_pct  = +(60 + 20 * Math.sin(t * 0.03 + 1)).toFixed(1);
+  simData.temperatura_c    = +(27 + 12 * Math.sin(t * 0.04)).toFixed(1);
+  simData.umidade_ar_pct   = +(60 + 20 * Math.sin(t * 0.03 + 1)).toFixed(1);
   simData.umidade_solo_pct = +(50 + 40 * Math.sin(t * 0.025 + 2)).toFixed(0);
-
-  /* ndvi calc mirrors firmware */
-  const solo = simData.umidade_solo_pct / 100;
+  const solo  = simData.umidade_solo_pct / 100;
   const fator = simData.temperatura_c > 35 ? 0.70 : simData.temperatura_c > 30 ? 0.85 : 1.0;
   simData.ndvi_estimado = +Math.min(Math.max(solo * fator, 0), 1).toFixed(3);
-
   if      (simData.ndvi_estimado >= 0.50) { simData.status_campo = 'Saudavel';   simData.alerta_ativo = false; simData.nivel_alerta = 'Nenhum'; simData.causas = []; }
   else if (simData.ndvi_estimado >= 0.35) { simData.status_campo = 'Observacao'; simData.alerta_ativo = false; simData.nivel_alerta = 'Nenhum'; simData.causas = ['ndvi_moderado']; }
   else                                    { simData.status_campo = 'Critico';    simData.alerta_ativo = true;  simData.nivel_alerta = 'Critico'; simData.causas = ['ndvi_baixo', simData.temperatura_c > 38 ? 'temperatura_alta' : null, simData.umidade_solo_pct < 30 ? 'solo_seco' : null].filter(Boolean); }
-
   render({ ...simData });
-  if (simData.alerta_ativo) addLog(`🚨 Alerta Crítico — NDVI ${simData.ndvi_estimado}`, 'danger');
+  if (simData.alerta_ativo) addLog(`🚨 Alerta Crítico — NDVI ${simData.ndvi_estimado}`, 'crit');
   else if (simData.status_campo === 'Observacao') addLog(`⚠ Observação — NDVI ${simData.ndvi_estimado}`, 'warn');
 }
-
+ 
 function simular() {
-  simMode = true;
-  baseUrl = '';
-  connected = false;
+  simMode = true; baseUrl = ''; connected = false;
   if (polling) clearInterval(polling);
-  $('conn-dot').className = 'dot online';
+  $('conn-dot').className = 'dot-st online';
   $('conn-label').textContent = 'Modo Demo (simulado)';
+  $('live-dot').style.background = 'var(--accent)';
   addLog('▶ Modo demo iniciado — dados simulados', 'ok');
   simularStep();
   polling = setInterval(simularStep, 2000);
 }
-
+ 
 /* ── INIT ── */
 $('ts').textContent = now();
 addLog('AgroVision Dashboard inicializado', 'ok');
