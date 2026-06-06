@@ -16,9 +16,11 @@
 
 | RM | Nome | Turma |
 |----|------|-------|
-|    |      | 2TDS  |
-|    |      | 2TDS  |
-|    |      | 2TDS  |
+| RM 562074 | João Victor Caetano Alves da Silva | 2TDSPF |
+| RM 564115 | João Victor Bueno Castelini da Silva | 2TDSPF |
+| RM 565667 | Ryan Vetoriano | 2TDSPF |
+| RM 562766 | Felipe Furlanetto | 2TDSPF |
+| RM 564002 | Raul Rezende Iemini Aguiar | 2TDSPF |
 
 ---
 
