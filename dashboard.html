@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
- 
+
 :root {
   --bg:        #EDEEE8;
   --sidebar:   #FFFFFF;
@@ -32,9 +32,9 @@
   --font:      'DM Sans', sans-serif;
   --font-ser:  'DM Serif Display', serif;
 }
- 
+
 html, body { height: 100%; }
- 
+
 body {
   font-family: var(--font);
   background: var(--bg);
@@ -42,7 +42,7 @@ body {
   display: flex;
   min-height: 100vh;
 }
- 
+
 /* ── SIDEBAR ── */
 .sidebar {
   width: 72px;
@@ -57,7 +57,7 @@ body {
   top: 0; left: 0; bottom: 0;
   z-index: 100;
 }
- 
+
 .sidebar-logo {
   width: 40px; height: 40px;
   background: var(--accent);
@@ -65,9 +65,9 @@ body {
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 20px;
 }
- 
+
 .sidebar-logo svg { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; }
- 
+
 .nav-item {
   width: 44px; height: 44px;
   border-radius: 12px;
@@ -79,9 +79,9 @@ body {
 .nav-item:hover { background: var(--accent-lt); color: var(--accent); }
 .nav-item.active { background: var(--accent-lt); color: var(--accent); }
 .nav-item svg { width: 20px; height: 20px; }
- 
+
 .sidebar-spacer { flex: 1; }
- 
+
 /* ── MAIN ── */
 .main {
   margin-left: 72px;
@@ -91,7 +91,7 @@ body {
   min-height: 100vh;
   overflow: hidden;
 }
- 
+
 /* ── TOPBAR ── */
 .topbar {
   display: flex;
@@ -102,7 +102,7 @@ body {
   gap: 16px;
   flex-wrap: wrap;
 }
- 
+
 .topbar-left h2 {
   font-family: var(--font-ser);
   font-size: 1.55rem;
@@ -115,13 +115,13 @@ body {
   color: var(--text3);
   margin-top: 2px;
 }
- 
+
 .topbar-right {
   display: flex;
   align-items: center;
   gap: 10px;
 }
- 
+
 .search-box {
   display: flex; align-items: center; gap: 8px;
   background: var(--card);
@@ -137,7 +137,7 @@ body {
 }
 .search-box input::placeholder { color: var(--text3); }
 .search-box svg { width: 15px; height: 15px; color: var(--text3); flex-shrink: 0; }
- 
+
 .icon-btn {
   width: 36px; height: 36px;
   background: var(--card);
@@ -150,14 +150,14 @@ body {
 }
 .icon-btn:hover { background: var(--accent-lt); }
 .icon-btn svg { width: 16px; height: 16px; color: var(--text2); }
- 
+
 .notif-dot {
   position: absolute; top: 7px; right: 7px;
   width: 7px; height: 7px; border-radius: 50%;
   background: var(--danger);
   border: 2px solid var(--card);
 }
- 
+
 .conn-pill {
   display: flex; align-items: center; gap: 8px;
   background: var(--card);
@@ -175,7 +175,7 @@ body {
   color: var(--accent); outline: none; width: 100px;
 }
 .conn-pill input::placeholder { color: var(--text3); }
- 
+
 .btn-sm {
   padding: 7px 14px;
   border-radius: 20px;
@@ -190,7 +190,7 @@ body {
 .btn-primary:hover { background: #2d4430; }
 .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
 .btn-ghost:hover { background: var(--accent-lt); color: var(--accent); border-color: var(--accent); }
- 
+
 /* ── CONTENT ── */
 .content {
   flex: 1;
@@ -199,14 +199,14 @@ body {
   flex-direction: column;
   gap: 16px;
 }
- 
+
 /* ── TOP ROW — small stat cards ── */
 .top-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 14px;
 }
- 
+
 .stat-card {
   background: var(--card);
   border-radius: var(--r);
@@ -221,12 +221,12 @@ body {
   overflow: hidden;
 }
 .stat-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
- 
+
 .stat-card.dark {
   background: var(--card2);
   color: #fff;
 }
- 
+
 .stat-label {
   font-size: .7rem;
   color: var(--text3);
@@ -236,7 +236,7 @@ body {
   margin-bottom: 6px;
 }
 .stat-card.dark .stat-label { color: rgba(255,255,255,.55); }
- 
+
 .stat-value {
   font-family: var(--font-ser);
   font-size: 1.9rem;
@@ -244,7 +244,7 @@ body {
   line-height: 1;
 }
 .stat-card.dark .stat-value { color: #fff; }
- 
+
 .stat-unit {
   font-family: var(--font);
   font-size: .85rem;
@@ -253,7 +253,7 @@ body {
   margin-left: 3px;
 }
 .stat-card.dark .stat-unit { color: rgba(255,255,255,.55); }
- 
+
 .stat-sub {
   font-size: .72rem;
   color: var(--text3);
@@ -261,7 +261,7 @@ body {
   display: flex; align-items: center; gap: 4px;
 }
 .stat-card.dark .stat-sub { color: rgba(255,255,255,.55); }
- 
+
 .stat-badge {
   display: inline-flex; align-items: center; gap: 3px;
   padding: 2px 8px; border-radius: 20px;
@@ -271,18 +271,18 @@ body {
 .badge-warn { background: var(--warn-lt);   color: var(--warn); }
 .badge-crit { background: var(--danger-lt); color: var(--danger); }
 .badge-idle { background: var(--bg); color: var(--text3); }
- 
+
 .stat-chart {
   width: 64px; height: 36px; flex-shrink: 0;
 }
- 
+
 /* ── MIDDLE ROW ── */
 .mid-row {
   display: grid;
   grid-template-columns: 1fr 1fr 340px;
   gap: 14px;
 }
- 
+
 /* ── SECTION CARD ── */
 .section-card {
   background: var(--card);
@@ -290,7 +290,7 @@ body {
   padding: 22px 24px;
   box-shadow: var(--shadow);
 }
- 
+
 .card-header {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 16px;
@@ -307,13 +307,13 @@ body {
   animation: pulse 2s infinite;
 }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
- 
+
 .card-action {
   font-size: .7rem; color: var(--text3);
   cursor: pointer; display: flex; align-items: center; gap: 4px;
 }
 .card-action:hover { color: var(--accent); }
- 
+
 /* ── NDVI BAR ── */
 .ndvi-track {
   height: 10px;
@@ -338,7 +338,7 @@ body {
   font-size: .62rem; color: var(--text3);
   margin-top: 4px;
 }
- 
+
 .ndvi-big-row {
   display: flex; align-items: baseline; gap: 8px;
   margin: 16px 0 4px;
@@ -355,10 +355,10 @@ body {
   line-height: 1.4;
   flex: 1;
 }
- 
+
 /* ── MINI SPARKLINE ── */
 .sparkline { width: 100%; height: 48px; }
- 
+
 /* ── STATUS CHIP ── */
 .status-chip {
   display: inline-flex; align-items: center; gap: 6px;
@@ -371,7 +371,7 @@ body {
 .chip-crit { color: var(--danger);  border-color: rgba(184,64,64,.3);  background: var(--danger-lt); animation: chipblink .8s infinite; }
 .chip-idle { color: var(--text3);   border-color: var(--border);       background: var(--bg); }
 @keyframes chipblink { 0%,100%{opacity:1} 50%{opacity:.6} }
- 
+
 /* ── ALERT CARD ── */
 .alert-card {
   background: var(--card);
@@ -380,18 +380,18 @@ body {
   box-shadow: var(--shadow);
 }
 .alert-card.active { border: 1px solid rgba(184,64,64,.25); background: #FFFAFA; }
- 
+
 .alert-row {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 12px;
 }
- 
+
 .alert-causes-text {
   font-size: .75rem; color: var(--text2);
   margin-top: 6px; margin-bottom: 16px;
   line-height: 1.5;
 }
- 
+
 .btn-reset {
   width: 100%;
   padding: 10px;
@@ -407,7 +407,7 @@ body {
 }
 .btn-reset:hover:not(:disabled) { background: var(--danger); color: #fff; }
 .btn-reset:disabled { opacity: .35; cursor: default; }
- 
+
 /* ── LOG ── */
 .log-list {
   display: flex; flex-direction: column; gap: 2px;
@@ -427,14 +427,14 @@ body {
 .log-row.ok   .log-msg { color: var(--accent); }
 .log-row.warn .log-msg { color: var(--warn); }
 .log-row.crit .log-msg { color: var(--danger); }
- 
+
 /* ── BOTTOM ROW ── */
 .bot-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
- 
+
 /* ── CONNECTION SECTION ── */
 .conn-section {
   background: var(--card);
@@ -442,7 +442,7 @@ body {
   padding: 22px 24px;
   box-shadow: var(--shadow);
 }
- 
+
 .ip-row {
   display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
 }
@@ -458,7 +458,7 @@ body {
 }
 .ip-input:focus { border-color: var(--accent); }
 .ip-input::placeholder { color: var(--text3); }
- 
+
 .conn-state {
   display: flex; align-items: center; gap: 6px;
   font-size: .72rem; color: var(--text3);
@@ -473,7 +473,7 @@ body {
 .dot-st.online { background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: pulse 2s infinite; }
 .dot-st.error  { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
 .dot-st.warn   { background: var(--warn);   box-shadow: 0 0 6px var(--warn); }
- 
+
 /* ── ENDPOINTS TABLE ── */
 .ep-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
 .ep-table th {
@@ -498,7 +498,7 @@ body {
 }
 .ep-method.post { background: var(--warn-lt); color: var(--warn); }
 .ep-route { color: var(--accent-md); font-weight: 500; margin-left: 4px; }
- 
+
 /* ── GUIDE STEPS ── */
 .guide-steps { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
 .guide-step { display: flex; gap: 10px; align-items: flex-start; }
@@ -514,17 +514,154 @@ body {
   border-radius: 4px; padding: 0 5px;
   font-size: .7rem; color: var(--accent-md);
 }
- 
+
 /* ── UPTIME ROW ── */
 .uptime-row {
   display: flex; align-items: center; justify-content: space-between;
   font-size: .72rem; color: var(--text3);
   margin-top: 4px;
 }
- 
+
 /* ── SVG MINI CHARTS ── */
 .spark-path { fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
- 
+
+/* ── TOAST NOTIFICATIONS ── */
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 16px;
+  min-width: 300px;
+  max-width: 380px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.14), 0 2px 8px rgba(0,0,0,.08);
+  border: 1px solid var(--border);
+  pointer-events: all;
+  cursor: default;
+  animation: toastIn .35s cubic-bezier(.34,1.56,.64,1) forwards;
+  position: relative;
+  overflow: hidden;
+}
+.toast.toast-exit {
+  animation: toastOut .28s ease-in forwards;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(110%) scale(.92); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0) scale(1); max-height: 160px; margin-bottom: 0; }
+  to   { opacity: 0; transform: translateX(60%) scale(.88); max-height: 0; padding: 0; margin: 0; border-width: 0; }
+}
+
+.toast::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 3px;
+  border-radius: 0 0 0 14px;
+  animation: toastProgress linear forwards;
+  animation-duration: var(--toast-dur, 4s);
+}
+@keyframes toastProgress {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+.toast-ok    { border-color: rgba(61,90,62,.3); }
+.toast-ok    .toast-icon { background: var(--accent-lt); color: var(--accent); }
+.toast-ok::after { background: var(--accent); }
+
+.toast-warn  { border-color: rgba(196,124,43,.35); }
+.toast-warn  .toast-icon { background: var(--warn-lt); color: var(--warn); }
+.toast-warn::after { background: var(--warn); }
+
+.toast-error { border-color: rgba(184,64,64,.3); }
+.toast-error .toast-icon { background: var(--danger-lt); color: var(--danger); }
+.toast-error::after { background: var(--danger); }
+
+.toast-icon {
+  width: 38px; height: 38px; flex-shrink: 0;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+}
+
+.toast-body { flex: 1; min-width: 0; }
+
+.toast-title {
+  font-size: .83rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 3px;
+}
+
+.toast-msg {
+  font-size: .74rem;
+  color: var(--text2);
+  line-height: 1.45;
+}
+
+.toast-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 9px;
+  flex-wrap: wrap;
+}
+
+.toast-chip {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 5px 10px;
+}
+
+.toast-chip-label {
+  font-size: .58rem;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 1px;
+}
+
+.toast-chip-val {
+  font-family: var(--font-ser);
+  font-size: 1.05rem;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.toast-close {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--text3);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s;
+  margin-top: -2px;
+}
+.toast-close:hover { background: var(--bg); color: var(--text); }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 1100px) {
   .mid-row { grid-template-columns: 1fr 1fr; }
@@ -542,7 +679,7 @@ body {
 </style>
 </head>
 <body>
- 
+
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-logo">
@@ -571,10 +708,10 @@ body {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
   </div>
 </aside>
- 
+
 <!-- MAIN -->
 <div class="main">
- 
+
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="topbar-left">
@@ -595,10 +732,10 @@ body {
       </div>
     </div>
   </div>
- 
+
   <!-- CONTENT -->
   <div class="content">
- 
+
     <!-- TOP ROW — 4 stat cards -->
     <div class="top-row">
       <!-- Temperatura -->
@@ -612,7 +749,7 @@ body {
           <path class="spark-path" id="sp-temp" d="M0,18 L64,18" stroke="var(--text3)"/>
         </svg>
       </div>
- 
+
       <!-- Umidade Ar -->
       <div class="stat-card" id="card-umar">
         <div>
@@ -624,7 +761,7 @@ body {
           <path class="spark-path" id="sp-umar" d="M0,18 L64,18" stroke="var(--text3)"/>
         </svg>
       </div>
- 
+
       <!-- Umidade Solo -->
       <div class="stat-card" id="card-solo">
         <div>
@@ -636,7 +773,7 @@ body {
           <path class="spark-path" id="sp-solo" d="M0,18 L64,18" stroke="var(--text3)"/>
         </svg>
       </div>
- 
+
       <!-- NDVI — dark card -->
       <div class="stat-card dark" id="card-ndvi">
         <div>
@@ -649,10 +786,10 @@ body {
         </svg>
       </div>
     </div>
- 
+
     <!-- MID ROW -->
     <div class="mid-row">
- 
+
       <!-- NDVI Detail -->
       <div class="section-card">
         <div class="card-header">
@@ -662,7 +799,7 @@ body {
           </div>
           <div class="card-action" id="uptime-label">Uptime: --</div>
         </div>
- 
+
         <div class="ndvi-track">
           <div class="ndvi-zone-crit"></div>
           <div class="ndvi-zone-obs"></div>
@@ -672,12 +809,12 @@ body {
         <div class="ndvi-labels">
           <span>0.0 — Crítico</span><span>0.35</span><span>0.50 — Atenção</span><span>1.0 — Saudável</span>
         </div>
- 
+
         <div class="ndvi-big-row">
           <div class="ndvi-number" id="ndvi-big">—</div>
           <div class="ndvi-interp" id="ndvi-interp">Aguardando dados do ESP32...</div>
         </div>
- 
+
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;flex-wrap:wrap;gap:8px;">
           <div>
             <div style="font-size:.65rem;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;">Status do Campo</div>
@@ -686,7 +823,7 @@ body {
           <span class="status-chip chip-idle" id="campo-badge">Aguardando conexão</span>
         </div>
       </div>
- 
+
       <!-- Log de Eventos -->
       <div class="section-card">
         <div class="card-header">
@@ -695,7 +832,7 @@ body {
         </div>
         <div class="log-list" id="log-list"></div>
       </div>
- 
+
       <!-- Alert + Reset -->
       <div class="alert-card" id="alert-box">
         <div class="card-header" style="margin-bottom:8px;">
@@ -706,10 +843,10 @@ body {
         <button class="btn-reset" id="btn-reset" onclick="resetarAlerta()" disabled>Resetar Alerta</button>
       </div>
     </div>
- 
+
     <!-- BOTTOM ROW -->
     <div class="bot-row">
- 
+
       <!-- Connection + Guide -->
       <div class="conn-section">
         <div class="card-header" style="margin-bottom:4px;">
@@ -719,13 +856,13 @@ body {
             <span id="conn-label">Desconectado</span>
           </div>
         </div>
- 
+
         <div class="ip-row">
           <input class="ip-input" type="text" id="ip-input" placeholder="Ex: 10.0.0.2"/>
           <button class="btn-sm btn-primary" onclick="conectar()">Conectar</button>
           <button class="btn-sm btn-ghost" onclick="simular()">Demo</button>
         </div>
- 
+
         <div style="margin-top:20px;">
           <div style="font-size:.72rem;font-weight:600;color:var(--text);margin-bottom:10px;">Como conectar ao Wokwi</div>
           <div class="guide-steps">
@@ -752,7 +889,7 @@ body {
           </div>
         </div>
       </div>
- 
+
       <!-- Endpoints -->
       <div class="section-card">
         <div class="card-header">
@@ -770,33 +907,93 @@ body {
             <tr><td><span class="ep-method post">POST</span></td><td><span class="ep-route">/api/alerta/reset</span></td><td>Reseta o alerta manualmente</td></tr>
           </tbody>
         </table>
- 
+
         <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
           <div style="font-size:.72rem;font-weight:600;color:var(--text);margin-bottom:4px;">AgroVision IoT</div>
           <div style="font-size:.7rem;color:var(--text3);line-height:1.5;">FIAP Global Solution 2026/1 · Disruptive Architectures: IoT, IoB & Generative IA · ESP32 · Talhão A1</div>
         </div>
       </div>
- 
+
     </div>
   </div><!-- /content -->
 </div><!-- /main -->
- 
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
 <script>
-/* ── STATE ── */
 let baseUrl   = '';
 let polling   = null;
 let simMode   = false;
 let simT      = 0;
 let connected = false;
- 
+let _lastAlertState = false;
+
 /* history for sparklines */
 const hist = { temp: [], umar: [], solo: [], ndvi: [] };
 const HIST_MAX = 20;
- 
+
 const $ = id => document.getElementById(id);
- 
+
+/* ── TOAST SYSTEM ── */
+let _toastId = 0;
+
+function toast(type, title, msg, { dur = 4000, meta = null } = {}) {
+  const container = $('toast-container');
+  const id = ++_toastId;
+
+  const icons = {
+    ok:    '✓',
+    warn:  '⚡',
+    error: '✕',
+  };
+
+  let metaHTML = '';
+  if (meta) {
+    metaHTML = `<div class="toast-meta">` +
+      meta.map(m => `<div class="toast-chip">
+        <span class="toast-chip-label">${m.label}</span>
+        <span class="toast-chip-val">${m.value}</span>
+      </div>`).join('') +
+    `</div>`;
+  }
+
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.style.setProperty('--toast-dur', dur + 'ms');
+  el.id = `toast-${id}`;
+  el.innerHTML = `
+    <div class="toast-icon">${icons[type] || '●'}</div>
+    <div class="toast-body">
+      <div class="toast-title">${title}</div>
+      <div class="toast-msg">${msg}</div>
+      ${metaHTML}
+    </div>
+    <button class="toast-close" onclick="dismissToast(${id})">✕</button>
+  `;
+  container.appendChild(el);
+
+  const timer = setTimeout(() => dismissToast(id), dur);
+  el._timer = timer;
+}
+
+function dismissToast(id) {
+  const el = $(`toast-${id}`);
+  if (!el) return;
+  clearTimeout(el._timer);
+  el.classList.add('toast-exit');
+  el.addEventListener('animationend', () => el.remove(), { once: true });
+}
+
+function dismissAllToasts() {
+  document.querySelectorAll('.toast').forEach(el => {
+    clearTimeout(el._timer);
+    el.remove();
+  });
+}
+
 function now() { return new Date().toLocaleTimeString('pt-BR'); }
- 
+
 function ndviColor(n) {
   if (n >= 0.50) return 'var(--accent)';
   if (n >= 0.35) return 'var(--warn)';
@@ -817,7 +1014,7 @@ function statusLabel(s) {
   if (s === 'Observacao' || s === 'Observação') return '◎ Observação';
   return '⚠ Crítico';
 }
- 
+
 /* ── SPARKLINE ── */
 function buildSparkPath(vals, min, max, w=64, h=36) {
   if (vals.length < 2) return `M0,${h/2} L${w},${h/2}`;
@@ -829,13 +1026,13 @@ function buildSparkPath(vals, min, max, w=64, h=36) {
   });
   return 'M' + pts.join(' L');
 }
- 
+
 function updateSpark(key, spId, vals, minV, maxV, stroke) {
   const path = buildSparkPath(vals, minV, maxV);
   const el = $(spId);
   if (el) { el.setAttribute('d', path); el.setAttribute('stroke', stroke); }
 }
- 
+
 /* ── LOG ── */
 function addLog(msg, type = 'ok') {
   const list  = $('log-list');
@@ -845,7 +1042,7 @@ function addLog(msg, type = 'ok') {
   list.prepend(entry);
   while (list.children.length > 60) list.removeChild(list.lastChild);
 }
- 
+
 /* ── RENDER ── */
 function render(d) {
   const temp = d.temperatura_c    ?? 0;
@@ -856,57 +1053,57 @@ function render(d) {
   const al   = d.alerta_ativo     ?? false;
   const nl   = d.nivel_alerta     ?? 'Nenhum';
   const up   = d.uptime_ms        ?? 0;
- 
+
   /* history */
   [['temp',temp],['umar',umar],['solo',solo],['ndvi',ndvi]].forEach(([k,v]) => {
     hist[k].push(v);
     if (hist[k].length > HIST_MAX) hist[k].shift();
   });
- 
+
   /* timestamp */
   $('ts').textContent = now();
- 
+
   /* uptime */
   const s = Math.floor(up / 1000);
   $('uptime-label').textContent = `Uptime: ${Math.floor(s/60)}m ${s%60}s`;
- 
+
   /* values */
   $('v-temp').textContent = temp.toFixed(1);
   $('v-umar').textContent = umar.toFixed(1);
   $('v-solo').textContent = solo.toFixed(0);
   $('v-ndvi').textContent = ndvi.toFixed(2);
- 
+
   /* temp badge */
   const bt = $('badge-temp');
   if (temp > 38) { bt.textContent = '⚠ Calor crítico'; bt.className = 'stat-badge badge-crit'; }
   else if (temp > 32) { bt.textContent = '~ Atenção'; bt.className = 'stat-badge badge-warn'; }
   else { bt.textContent = '✓ Normal'; bt.className = 'stat-badge badge-ok'; }
- 
+
   /* umar badge */
   const bu = $('badge-umar');
   if (umar < 40) { bu.textContent = '⚠ Muito seco'; bu.className = 'stat-badge badge-warn'; }
   else if (umar > 80) { bu.textContent = '⚠ Excesso'; bu.className = 'stat-badge badge-warn'; }
   else { bu.textContent = '✓ Ideal'; bu.className = 'stat-badge badge-ok'; }
- 
+
   /* solo badge */
   const bs = $('badge-solo');
   if (solo < 30) { bs.textContent = '⚠ Solo seco'; bs.className = 'stat-badge badge-warn'; }
   else if (solo > 85) { bs.textContent = '⚠ Encharcado'; bs.className = 'stat-badge badge-warn'; }
   else { bs.textContent = '✓ Ideal'; bs.className = 'stat-badge badge-ok'; }
- 
+
   /* ndvi card bg tint */
   $('ndvi-sub-label').textContent = ndvi >= 0.50 ? 'Vegetação Saudável' : ndvi >= 0.35 ? 'Observação' : 'Crítico';
- 
+
   /* stat card alert states */
   $('card-temp').style.outline = temp > 38 ? '2px solid var(--danger)' : 'none';
   $('card-solo').style.outline = solo < 30 ? '2px solid var(--warn)' : 'none';
- 
+
   /* sparklines */
   updateSpark('temp', 'sp-temp', hist.temp, 15, 45, temp > 38 ? 'var(--danger)' : temp > 32 ? 'var(--warn)' : 'var(--accent-md)');
   updateSpark('umar', 'sp-umar', hist.umar, 0, 100, umar < 40 || umar > 80 ? 'var(--warn)' : 'var(--accent-md)');
   updateSpark('solo', 'sp-solo', hist.solo, 0, 100, solo < 30 ? 'var(--warn)' : 'var(--accent-md)');
   updateSpark('ndvi', 'sp-ndvi', hist.ndvi, 0, 1, 'rgba(255,255,255,.7)');
- 
+
   /* NDVI bar */
   const pct = Math.min(ndvi * 100, 100);
   $('ndvi-fill').style.width  = pct + '%';
@@ -915,16 +1112,16 @@ function render(d) {
   const nb = $('ndvi-big');
   nb.textContent = ndvi.toFixed(3);
   nb.style.color = ndviColor(ndvi);
- 
+
   /* status chips */
   const cc = $('campo-chip');
   cc.className = `status-chip ${statusChipClass(st)}`;
   cc.textContent = statusLabel(st);
- 
+
   const cb = $('campo-badge');
   cb.className = `status-chip ${statusChipClass(st)}`;
   cb.textContent = statusLabel(st);
- 
+
   /* alert */
   const ab = $('alert-box');
   const abadge = $('alert-badge');
@@ -936,6 +1133,18 @@ function render(d) {
     $('alert-causes').textContent = causes.length ? 'Causas: ' + causes.join(', ') : 'Alerta ativo';
     $('btn-reset').disabled = false;
     $('notif-dot').style.display = 'block';
+    // Toast only when alert just turned on (not on every poll)
+    if (!_lastAlertState && !simMode) {
+      const ndvi = d.ndvi_estimado ?? 0;
+      toast('error', '🚨 Alerta Crítico no Campo!',
+        'NDVI <strong>' + ndvi.toFixed(3) + '</strong> — ' + (causes.length ? 'Causas: ' + causes.join(', ') : 'Verificar campo.'),
+        { dur: 8000, meta: [
+          { label: 'NDVI', value: ndvi.toFixed(2) },
+          { label: 'Temp', value: (d.temperatura_c ?? 0).toFixed(1) + '°C' },
+          { label: 'Solo', value: (d.umidade_solo_pct ?? 0).toFixed(0) + '%' },
+        ]});
+    }
+    _lastAlertState = true;
   } else {
     ab.className = 'alert-card';
     abadge.className = 'status-chip chip-ok';
@@ -943,9 +1152,10 @@ function render(d) {
     $('alert-causes').textContent = 'Sistema operando normalmente.';
     $('btn-reset').disabled = true;
     $('notif-dot').style.display = 'none';
+    _lastAlertState = false;
   }
 }
- 
+
 /* ── FETCH ── */
 async function fetchStatus() {
   if (simMode) { simularStep(); return; }
@@ -960,40 +1170,63 @@ async function fetchStatus() {
       const ad = await ar.json();
       causas = ad.causas ?? [];
     } catch(_){}
-    setOnline();
+    setOnline(data);
     render({ ...data, causas });
   } catch (e) {
     setOffline(e.message);
   }
 }
- 
-function setOnline() {
-  if (!connected) { addLog('✓ Conexão estabelecida com ESP32', 'ok'); connected = true; }
+
+function setOnline(data) {
+  if (!connected) {
+    addLog('✓ Conexão estabelecida com ESP32', 'ok');
+    connected = true;
+    // Build meta chips from first reading
+    const meta = data ? [
+      { label: 'Temp', value: (data.temperatura_c ?? 0).toFixed(1) + '°C' },
+      { label: 'UmAr', value: (data.umidade_ar_pct ?? 0).toFixed(0) + '%' },
+      { label: 'Solo', value: (data.umidade_solo_pct ?? 0).toFixed(0) + '%' },
+      { label: 'NDVI', value: (data.ndvi_estimado ?? 0).toFixed(2) },
+    ] : null;
+    toast('ok', '🛰 Wokwi conectado!',
+      'ESP32 respondendo em <strong>' + baseUrl.replace('http://','') + '</strong> — dados ao vivo.',
+      { dur: 5500, meta });
+  }
   $('conn-dot').className = 'dot-st online';
   $('conn-label').textContent = 'Conectado · ' + baseUrl.replace('http://','');
   $('live-dot').style.background = 'var(--accent)';
 }
 function setOffline(reason) {
-  if (connected) { addLog(`✗ Conexão perdida: ${reason}`, 'crit'); connected = false; }
+  if (connected) {
+    addLog(`✗ Conexão perdida: ${reason}`, 'crit');
+    connected = false;
+    toast('error', '📡 Conexão perdida',
+      'ESP32 não respondeu: <strong>' + (reason || 'timeout') + '</strong>. Verifique se o Wokwi ainda está rodando.',
+      { dur: 6000 });
+  }
   $('conn-dot').className = 'dot-st error';
   $('conn-label').textContent = 'Sem sinal · ' + (reason || 'timeout');
   $('live-dot').style.background = 'var(--danger)';
 }
- 
+
 function conectar() {
   const ip = $('ip-input').value.trim();
   if (!ip) { addLog('⚠ Digite um IP válido', 'warn'); return; }
   simMode = false;
   baseUrl = ip.startsWith('http') ? ip : `http://${ip}`;
   connected = false;
+  dismissAllToasts();
   addLog(`→ Conectando a ${baseUrl}…`, 'warn');
+  toast('warn', '⏳ Conectando ao Wokwi…',
+    'Tentando alcançar o ESP32 em <strong>' + baseUrl.replace('http://','') + '</strong>',
+    { dur: 3500 });
   $('conn-dot').className = 'dot-st warn';
   $('conn-label').textContent = 'Conectando…';
   if (polling) clearInterval(polling);
   fetchStatus();
   polling = setInterval(fetchStatus, 2000);
 }
- 
+
 async function resetarAlerta() {
   if (simMode) { addLog('↺ Alerta resetado (modo demo)', 'ok'); return; }
   try {
@@ -1004,14 +1237,14 @@ async function resetarAlerta() {
     addLog(`✗ Erro ao resetar: ${e.message}`, 'crit');
   }
 }
- 
+
 /* ── DEMO ── */
 let simData = {
   temperatura_c: 27, umidade_ar_pct: 65, umidade_solo_pct: 60,
   ndvi_estimado: 0.72, status_campo: 'Saudavel',
   alerta_ativo: false, nivel_alerta: 'Nenhum', uptime_ms: 0, causas: []
 };
- 
+
 function simularStep() {
   simT += 2000;
   simData.uptime_ms = simT;
@@ -1026,21 +1259,42 @@ function simularStep() {
   else if (simData.ndvi_estimado >= 0.35) { simData.status_campo = 'Observacao'; simData.alerta_ativo = false; simData.nivel_alerta = 'Nenhum'; simData.causas = ['ndvi_moderado']; }
   else                                    { simData.status_campo = 'Critico';    simData.alerta_ativo = true;  simData.nivel_alerta = 'Critico'; simData.causas = ['ndvi_baixo', simData.temperatura_c > 38 ? 'temperatura_alta' : null, simData.umidade_solo_pct < 30 ? 'solo_seco' : null].filter(Boolean); }
   render({ ...simData });
-  if (simData.alerta_ativo) addLog(`🚨 Alerta Crítico — NDVI ${simData.ndvi_estimado}`, 'crit');
-  else if (simData.status_campo === 'Observacao') addLog(`⚠ Observação — NDVI ${simData.ndvi_estimado}`, 'warn');
+  if (simData.alerta_ativo) {
+    addLog(`🚨 Alerta Crítico — NDVI ${simData.ndvi_estimado}`, 'crit');
+    // Only toast when alert just became active (not every tick)
+    if (!_lastAlertState) {
+      toast('error', '🚨 Alerta Crítico no Campo!',
+        'NDVI <strong>' + simData.ndvi_estimado + '</strong> — Possível infestação detectada. Acionar missão de drone.',
+        { dur: 7000, meta: [
+          { label: 'NDVI', value: simData.ndvi_estimado },
+          { label: 'Temp', value: simData.temperatura_c + '°C' },
+          { label: 'Solo', value: simData.umidade_solo_pct + '%' },
+        ]});
+    }
+    _lastAlertState = true;
+  } else if (simData.status_campo === 'Observacao') {
+    addLog(`⚠ Observação — NDVI ${simData.ndvi_estimado}`, 'warn');
+    _lastAlertState = false;
+  } else {
+    _lastAlertState = false;
+  }
 }
- 
+
 function simular() {
   simMode = true; baseUrl = ''; connected = false;
   if (polling) clearInterval(polling);
+  dismissAllToasts();
   $('conn-dot').className = 'dot-st online';
   $('conn-label').textContent = 'Modo Demo (simulado)';
   $('live-dot').style.background = 'var(--accent)';
   addLog('▶ Modo demo iniciado — dados simulados', 'ok');
+  toast('warn', '▶ Modo Demo ativado',
+    'Dados sendo simulados localmente. Conecte ao Wokwi para leituras reais do ESP32.',
+    { dur: 5000 });
   simularStep();
   polling = setInterval(simularStep, 2000);
 }
- 
+
 /* ── INIT ── */
 $('ts').textContent = now();
 addLog('AgroVision Dashboard inicializado', 'ok');
