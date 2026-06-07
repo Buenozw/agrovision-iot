@@ -662,6 +662,150 @@ body {
 }
 .toast-close:hover { background: var(--bg); color: var(--text); }
 
+/* ── AUTO SCAN ── */
+.btn-scan {
+  display: flex; align-items: center; gap: 6px;
+  width: 100%;
+  padding: 8px 14px;
+  border-radius: var(--r-sm);
+  border: 1px dashed var(--border);
+  background: transparent;
+  font-family: var(--font); font-size: .75rem; font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-scan:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
+.btn-scan:disabled { opacity: .5; cursor: default; }
+.btn-scan svg { flex-shrink: 0; }
+
+.scan-status {
+  margin-top: 8px;
+  font-size: .72rem;
+  color: var(--text3);
+  display: flex; align-items: center; gap: 6px;
+}
+.scan-spinner {
+  width: 12px; height: 12px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.scan-results {
+  display: flex; flex-direction: column; gap: 4px;
+  margin-top: 6px;
+}
+.scan-result-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 12px;
+  background: var(--accent-lt);
+  border: 1px solid rgba(61,90,62,.25);
+  border-radius: var(--r-sm);
+  font-size: .75rem;
+  animation: slideIn .2s ease;
+}
+.scan-result-ip { font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+.scan-result-btn {
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-family: var(--font); font-size: .7rem; font-weight: 600;
+  cursor: pointer;
+}
+.scan-result-btn:hover { background: #2d4430; }
+
+/* ── IP FINDER BOX ── */
+.ip-finder-box {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.ip-method {
+  display: flex; gap: 10px;
+  margin-bottom: 14px;
+  align-items: flex-start;
+}
+.ip-method-num {
+  width: 22px; height: 22px; flex-shrink: 0;
+  background: var(--accent); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .65rem; font-weight: 700; color: #fff;
+  margin-top: 1px;
+}
+.ip-method-body { flex: 1; min-width: 0; }
+.ip-method-title {
+  font-size: .75rem; font-weight: 700; color: var(--text);
+  margin-bottom: 3px;
+}
+.ip-method-desc {
+  font-size: .72rem; color: var(--text2); line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.ip-codeblock {
+  background: #1C2320;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: monospace; font-size: .68rem;
+  line-height: 1.7;
+  margin-bottom: 6px;
+}
+.ip-code-dim { color: #4d7a5a; }
+.ip-code-highlight { color: #6dcf8a; }
+.ip-code-highlight strong { color: #39ff6e; font-weight: 700; }
+
+.ip-lcd {
+  background: #003300;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: monospace; font-size: .78rem;
+  margin-bottom: 6px;
+  display: inline-block;
+  min-width: 160px;
+  border: 2px solid #006600;
+}
+.ip-lcd-row { color: #33ff33; letter-spacing: 1px; line-height: 1.6; }
+.ip-lcd-ip { color: #00ff99; font-weight: 700; }
+
+.ip-tip {
+  font-size: .68rem; color: var(--text3);
+  background: var(--bg);
+  border-radius: 6px;
+  padding: 5px 8px;
+  line-height: 1.4;
+}
+.ip-tip code {
+  background: var(--border);
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: .66rem;
+  color: var(--accent-md);
+}
+
+.ip-common-label {
+  font-size: .68rem; color: var(--text3);
+  margin-bottom: 6px; margin-top: 4px;
+}
+.ip-common-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.ip-pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  font-family: monospace; font-size: .72rem;
+  color: var(--accent); font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.ip-pill:hover { background: var(--accent-lt); border-color: var(--accent); }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 1100px) {
   .mid-row { grid-template-columns: 1fr 1fr; }
@@ -857,35 +1001,78 @@ body {
           </div>
         </div>
 
+        <!-- IP row -->
         <div class="ip-row">
           <input class="ip-input" type="text" id="ip-input" placeholder="Ex: 10.0.0.2"/>
           <button class="btn-sm btn-primary" onclick="conectar()">Conectar</button>
           <button class="btn-sm btn-ghost" onclick="simular()">Demo</button>
         </div>
 
-        <div style="margin-top:20px;">
-          <div style="font-size:.72rem;font-weight:600;color:var(--text);margin-bottom:10px;">Como conectar ao Wokwi</div>
-          <div class="guide-steps">
-            <div class="guide-step">
-              <div class="step-num">1</div>
-              <div class="step-body">Inicie a simulação no Wokwi clicando em <strong>▶ Start Simulation</strong>.</div>
+        <!-- Auto-scan -->
+        <div style="margin-top:10px;">
+          <button class="btn-scan" id="btn-scan" onclick="scanIP()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            Buscar IP automaticamente
+          </button>
+          <div id="scan-status" class="scan-status" style="display:none"></div>
+          <div id="scan-results" class="scan-results"></div>
+        </div>
+
+        <!-- Where to find the IP -->
+        <div class="ip-finder-box">
+          <div style="font-size:.72rem;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16" stroke-width="3"/></svg>
+            Onde encontrar o IP do ESP32
+          </div>
+
+          <!-- Method 1: Serial Monitor -->
+          <div class="ip-method">
+            <div class="ip-method-num">1</div>
+            <div class="ip-method-body">
+              <div class="ip-method-title">Serial Monitor do Wokwi</div>
+              <div class="ip-method-desc">No painel inferior do Wokwi, clique em <strong>▼ Serial Monitor</strong>. Procure este bloco:</div>
+              <div class="ip-codeblock">
+                <span class="ip-code-dim">========================================</span><br>
+                <span class="ip-code-highlight">  IP DO ESP32: <strong>10.0.0.2</strong></span><br>
+                <span class="ip-code-dim">  Cole esse IP no dashboard.html</span><br>
+                <span class="ip-code-dim">========================================</span>
+              </div>
+              <div class="ip-tip">💡 Se o painel não aparecer: clique no botão <code>▼</code> na barra inferior do Wokwi ou pressione <code>Ctrl+Shift+M</code></div>
             </div>
-            <div class="guide-step">
-              <div class="step-num">2</div>
-              <div class="step-body">Veja o IP no Serial Monitor (entre linhas <code>===</code>) ou no LCD do ESP32.</div>
+          </div>
+
+          <!-- Method 2: LCD -->
+          <div class="ip-method">
+            <div class="ip-method-num">2</div>
+            <div class="ip-method-body">
+              <div class="ip-method-title">LCD 16×2 no circuito</div>
+              <div class="ip-method-desc">Nos primeiros <strong>4 segundos</strong> após conectar ao Wi-Fi, o LCD exibe:</div>
+              <div class="ip-lcd">
+                <div class="ip-lcd-row">WiFi OK!</div>
+                <div class="ip-lcd-row ip-lcd-ip">10.0.0.2</div>
+              </div>
+              <div class="ip-tip">💡 Se perdeu a janela de 4s, reinicie a simulação (⏹ Stop → ▶ Start)</div>
             </div>
-            <div class="guide-step">
-              <div class="step-num">3</div>
-              <div class="step-body">Cole o IP acima e clique <strong>Conectar</strong>. O dashboard consultará <code>/api/status</code> a cada 2s.</div>
+          </div>
+
+          <!-- Method 3: Wokwi Network tab -->
+          <div class="ip-method">
+            <div class="ip-method-num">3</div>
+            <div class="ip-method-body">
+              <div class="ip-method-title">Aba Network do Wokwi</div>
+              <div class="ip-method-desc">Durante a simulação, abra as <strong>DevTools do navegador</strong> (F12) → aba <strong>Network</strong>. Filtre por <code>api/status</code> para ver o IP nas requisições feitas pelo ESP32.</div>
+              <div class="ip-tip">⚠️ CORS bloqueando? Instale a extensão <strong>CORS Unblock</strong> no Chrome ou abra o Wokwi no mesmo navegador que este dashboard.</div>
             </div>
-            <div class="guide-step">
-              <div class="step-num">4</div>
-              <div class="step-body">Sem Wokwi? Clique <strong>Demo</strong> para simular dados em tempo real.</div>
-            </div>
-            <div class="guide-step">
-              <div class="step-num">5</div>
-              <div class="step-body">Se o navegador bloquear por CORS, use a extensão <code>CORS Unblock</code>.</div>
-            </div>
+          </div>
+
+          <!-- IPs comuns -->
+          <div class="ip-common-label">IPs mais comuns no Wokwi — clique para preencher:</div>
+          <div class="ip-common-list">
+            <button class="ip-pill" onclick="fillIP('10.0.0.2')">10.0.0.2</button>
+            <button class="ip-pill" onclick="fillIP('10.0.0.3')">10.0.0.3</button>
+            <button class="ip-pill" onclick="fillIP('10.0.0.4')">10.0.0.4</button>
+            <button class="ip-pill" onclick="fillIP('10.0.0.5')">10.0.0.5</button>
+            <button class="ip-pill" onclick="fillIP('192.168.1.100')">192.168.1.100</button>
           </div>
         </div>
       </div>
@@ -1293,6 +1480,85 @@ function simular() {
     { dur: 5000 });
   simularStep();
   polling = setInterval(simularStep, 2000);
+}
+
+/* ── IP HELPERS ── */
+function fillIP(ip) {
+  $('ip-input').value = ip;
+  $('ip-input').focus();
+  $('ip-input').style.borderColor = 'var(--accent)';
+  setTimeout(() => $('ip-input').style.borderColor = '', 1200);
+}
+
+async function scanIP() {
+  const btn = $('btn-scan');
+  const statusEl = $('scan-status');
+  const resultsEl = $('scan-results');
+
+  btn.disabled = true;
+  btn.textContent = 'Buscando...';
+  resultsEl.innerHTML = '';
+  statusEl.style.display = 'flex';
+
+  // Wokwi typically assigns 10.0.0.2 through 10.0.0.10
+  const candidates = [
+    '10.0.0.2','10.0.0.3','10.0.0.4','10.0.0.5','10.0.0.6',
+    '10.0.0.7','10.0.0.8','10.0.0.9','10.0.0.10',
+    '192.168.1.100','192.168.1.101','192.168.0.100','192.168.0.101',
+  ];
+
+  let found = 0;
+
+  for (let i = 0; i < candidates.length; i++) {
+    const ip = candidates[i];
+    statusEl.innerHTML = `<div class="scan-spinner"></div> Testando ${ip} (${i+1}/${candidates.length})…`;
+
+    try {
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), 1200);
+      const res = await fetch(`http://${ip}/api/status`, { signal: ctrl.signal });
+      clearTimeout(tid);
+
+      if (res.ok) {
+        const data = await res.json();
+        found++;
+        const item = document.createElement('div');
+        item.className = 'scan-result-item';
+        item.innerHTML = `
+          <div>
+            <span class="scan-result-ip">${ip}</span>
+            <span style="color:var(--text3);font-size:.68rem;margin-left:8px;">
+              Temp ${(data.temperatura_c??0).toFixed(1)}°C · NDVI ${(data.ndvi_estimado??0).toFixed(2)}
+            </span>
+          </div>
+          <button class="scan-result-btn" onclick="fillIP('${ip}');conectar()">Usar este IP</button>
+        `;
+        resultsEl.appendChild(item);
+        addLog(`✓ ESP32 encontrado em ${ip}`, 'ok');
+      }
+    } catch(_) {
+      // not reachable — continue
+    }
+  }
+
+  statusEl.style.display = 'none';
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg> Buscar IP automaticamente`;
+
+  if (found === 0) {
+    statusEl.style.display = 'flex';
+    statusEl.innerHTML = `⚠ Nenhum ESP32 encontrado. Confirme que o Wokwi está rodando e que o CORS está desbloqueado.`;
+    statusEl.style.color = 'var(--warn)';
+    addLog('⚠ Scan finalizado: nenhum ESP32 encontrado na rede', 'warn');
+    toast('warn', '⚠ ESP32 não encontrado',
+      'Verifique se o Wokwi está rodando e instale a extensão <strong>CORS Unblock</strong> no Chrome.',
+      { dur: 7000 });
+  } else {
+    addLog(`✓ Scan finalizado: ${found} ESP32 encontrado(s)`, 'ok');
+    toast('ok', `🛰 ${found} ESP32 encontrado!`,
+      `Clique em <strong>Usar este IP</strong> no resultado para conectar.`,
+      { dur: 5000 });
+  }
 }
 
 /* ── INIT ── */
