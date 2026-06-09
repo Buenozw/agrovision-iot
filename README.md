@@ -78,8 +78,6 @@ O arquivo **`dashboard.html`** é um dashboard standalone que abre direto no nav
 4. Cole o IP no campo do dashboard e clique **Conectar**
 5. O dashboard consultará `/api/status` e `/api/alerta` a cada 2 segundos automaticamente
 
-> **Dica VS Code:** Instale a extensão **Live Server** e clique em `Go Live` no canto inferior direito para abrir o dashboard com hot-reload.
-
 ---
 
 ## 🗂️ Estrutura de Arquivos
