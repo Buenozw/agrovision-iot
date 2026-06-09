@@ -7,7 +7,7 @@
 **Disciplina:** Disruptive Architectures: IoT, IoB & Generative IA
 
 🎥 **Vídeo demonstração (≤ 3 min):** _[link YouTube]_  
-🔗 **Repositório GitHub:** _[link público]_  
+🔗 **Repositório GitHub:** https://github.com/Buenozw/agrovision-iot.git
 🌐 **Simulação Wokwi:** _[link do projeto Wokwi]_
 
 ---

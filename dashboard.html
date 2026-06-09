@@ -991,90 +991,41 @@ body {
     <!-- BOTTOM ROW -->
     <div class="bot-row">
 
-      <!-- Connection + Guide -->
+      <!-- Connection -->
       <div class="conn-section">
-        <div class="card-header" style="margin-bottom:4px;">
+        <div class="card-header" style="margin-bottom:16px;">
           <div class="card-title">Conexão ESP32 (Wokwi)</div>
-          <div class="conn-state">
+        </div>
+
+        <!-- Status badge -->
+        <div id="conn-status-block" style="
+          display:flex; align-items:center; justify-content:space-between;
+          padding:14px 16px; border-radius:var(--r-sm);
+          background:var(--bg); border:1px solid var(--border);
+          margin-bottom:14px;
+        ">
+          <div style="display:flex;align-items:center;gap:10px;">
             <div class="dot-st" id="conn-dot"></div>
-            <span id="conn-label">Desconectado</span>
+            <div>
+              <div style="font-size:.82rem;font-weight:600;color:var(--text)" id="conn-label">Desconectado</div>
+              <div style="font-size:.7rem;color:var(--text3);margin-top:2px;" id="conn-sublabel">Wokwi não encontrado</div>
+            </div>
           </div>
-        </div>
-
-        <!-- IP row -->
-        <div class="ip-row">
-          <input class="ip-input" type="text" id="ip-input" placeholder="Ex: 10.0.0.2"/>
-          <button class="btn-sm btn-primary" onclick="conectar()">Conectar</button>
-          <button class="btn-sm btn-ghost" onclick="simular()">Demo</button>
-        </div>
-
-        <!-- Auto-scan -->
-        <div style="margin-top:10px;">
-          <button class="btn-scan" id="btn-scan" onclick="scanIP()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-            Buscar IP automaticamente
+          <button class="btn-sm btn-ghost" id="btn-retry" onclick="scanIP()" style="font-size:.7rem;">
+            Tentar novamente
           </button>
-          <div id="scan-status" class="scan-status" style="display:none"></div>
-          <div id="scan-results" class="scan-results"></div>
         </div>
 
-        <!-- Where to find the IP -->
-        <div class="ip-finder-box">
-          <div style="font-size:.72rem;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16" stroke-width="3"/></svg>
-            Onde encontrar o IP do ESP32
-          </div>
+        <!-- Demo button -->
+        <button class="btn-sm btn-ghost" onclick="simular()" style="width:100%;padding:10px;border-radius:var(--r-sm);">
+          ▶ Usar modo Demo (sem Wokwi)
+        </button>
 
-          <!-- Method 1: Serial Monitor -->
-          <div class="ip-method">
-            <div class="ip-method-num">1</div>
-            <div class="ip-method-body">
-              <div class="ip-method-title">Serial Monitor do Wokwi</div>
-              <div class="ip-method-desc">No painel inferior do Wokwi, clique em <strong>▼ Serial Monitor</strong>. Procure este bloco:</div>
-              <div class="ip-codeblock">
-                <span class="ip-code-dim">========================================</span><br>
-                <span class="ip-code-highlight">  IP DO ESP32: <strong>10.0.0.2</strong></span><br>
-                <span class="ip-code-dim">  Cole esse IP no dashboard.html</span><br>
-                <span class="ip-code-dim">========================================</span>
-              </div>
-              <div class="ip-tip">💡 Se o painel não aparecer: clique no botão <code>▼</code> na barra inferior do Wokwi ou pressione <code>Ctrl+Shift+M</code></div>
-            </div>
-          </div>
-
-          <!-- Method 2: LCD -->
-          <div class="ip-method">
-            <div class="ip-method-num">2</div>
-            <div class="ip-method-body">
-              <div class="ip-method-title">LCD 16×2 no circuito</div>
-              <div class="ip-method-desc">Nos primeiros <strong>4 segundos</strong> após conectar ao Wi-Fi, o LCD exibe:</div>
-              <div class="ip-lcd">
-                <div class="ip-lcd-row">WiFi OK!</div>
-                <div class="ip-lcd-row ip-lcd-ip">10.0.0.2</div>
-              </div>
-              <div class="ip-tip">💡 Se perdeu a janela de 4s, reinicie a simulação (⏹ Stop → ▶ Start)</div>
-            </div>
-          </div>
-
-          <!-- Method 3: Wokwi Network tab -->
-          <div class="ip-method">
-            <div class="ip-method-num">3</div>
-            <div class="ip-method-body">
-              <div class="ip-method-title">Aba Network do Wokwi</div>
-              <div class="ip-method-desc">Durante a simulação, abra as <strong>DevTools do navegador</strong> (F12) → aba <strong>Network</strong>. Filtre por <code>api/status</code> para ver o IP nas requisições feitas pelo ESP32.</div>
-              <div class="ip-tip">⚠️ CORS bloqueando? Instale a extensão <strong>CORS Unblock</strong> no Chrome ou abra o Wokwi no mesmo navegador que este dashboard.</div>
-            </div>
-          </div>
-
-          <!-- IPs comuns -->
-          <div class="ip-common-label">IPs mais comuns no Wokwi — clique para preencher:</div>
-          <div class="ip-common-list">
-            <button class="ip-pill" onclick="fillIP('10.0.0.2')">10.0.0.2</button>
-            <button class="ip-pill" onclick="fillIP('10.0.0.3')">10.0.0.3</button>
-            <button class="ip-pill" onclick="fillIP('10.0.0.4')">10.0.0.4</button>
-            <button class="ip-pill" onclick="fillIP('10.0.0.5')">10.0.0.5</button>
-            <button class="ip-pill" onclick="fillIP('192.168.1.100')">192.168.1.100</button>
-          </div>
-        </div>
+        <!-- Hidden inputs kept for JS compatibility -->
+        <input type="hidden" id="ip-input" value=""/>
+        <div id="scan-status" style="display:none"></div>
+        <div id="scan-results" style="display:none"></div>
+        <button id="btn-scan" style="display:none" onclick="scanIP()"></button>
       </div>
 
       <!-- Endpoints -->
@@ -1368,7 +1319,13 @@ function setOnline(data) {
   if (!connected) {
     addLog('✓ Conexão estabelecida com ESP32', 'ok');
     connected = true;
-    // Build meta chips from first reading
+    clearInterval(_autoScanInterval);
+    setBanner('connected', `✅ ESP32 conectado em <strong>${baseUrl.replace('http://','')}</strong> — dados ao vivo a cada 2s`);
+    // update sublabel
+    const sl = $('conn-sublabel');
+    if (sl) sl.textContent = 'Wokwi conectado · ' + baseUrl.replace('http://','');
+    const rb = $('btn-retry');
+    if (rb) rb.style.display = 'none';
     const meta = data ? [
       { label: 'Temp', value: (data.temperatura_c ?? 0).toFixed(1) + '°C' },
       { label: 'UmAr', value: (data.umidade_ar_pct ?? 0).toFixed(0) + '%' },
@@ -1380,19 +1337,25 @@ function setOnline(data) {
       { dur: 5500, meta });
   }
   $('conn-dot').className = 'dot-st online';
-  $('conn-label').textContent = 'Conectado · ' + baseUrl.replace('http://','');
+  $('conn-label').textContent = 'Conectado';
   $('live-dot').style.background = 'var(--accent)';
 }
 function setOffline(reason) {
   if (connected) {
     addLog(`✗ Conexão perdida: ${reason}`, 'crit');
     connected = false;
+    setBanner('notfound', `⚠ Conexão com ESP32 perdida — <strong>${reason || 'timeout'}</strong>. Verifique se o Wokwi ainda está rodando.`);
     toast('error', '📡 Conexão perdida',
       'ESP32 não respondeu: <strong>' + (reason || 'timeout') + '</strong>. Verifique se o Wokwi ainda está rodando.',
       { dur: 6000 });
+    iniciarAutoScan();
   }
   $('conn-dot').className = 'dot-st error';
-  $('conn-label').textContent = 'Sem sinal · ' + (reason || 'timeout');
+  $('conn-label').textContent = 'Desconectado';
+  const sl = $('conn-sublabel');
+  if (sl) sl.textContent = 'Wokwi não encontrado';
+  const rb = $('btn-retry');
+  if (rb) rb.style.display = '';
   $('live-dot').style.background = 'var(--danger)';
 }
 
@@ -1470,9 +1433,14 @@ function simularStep() {
 function simular() {
   simMode = true; baseUrl = ''; connected = false;
   if (polling) clearInterval(polling);
+  clearInterval(_autoScanInterval);
   dismissAllToasts();
   $('conn-dot').className = 'dot-st online';
-  $('conn-label').textContent = 'Modo Demo (simulado)';
+  $('conn-label').textContent = 'Modo Demo';
+  const sl = $('conn-sublabel');
+  if (sl) sl.textContent = 'Dados simulados localmente';
+  const rb = $('btn-retry');
+  if (rb) rb.style.display = 'none';
   $('live-dot').style.background = 'var(--accent)';
   addLog('▶ Modo demo iniciado — dados simulados', 'ok');
   toast('warn', '▶ Modo Demo ativado',
@@ -1490,7 +1458,20 @@ function fillIP(ip) {
   setTimeout(() => $('ip-input').style.borderColor = '', 1200);
 }
 
-async function scanIP() {
+/* ── WOKWI STATUS BANNER ── */
+function setBanner(state, msg) {
+  // banner removido — sem mensagem de status no topo
+  const sl = $('conn-sublabel');
+  if (!sl) return;
+  if (state === 'scanning')   sl.textContent = 'Procurando Wokwi…';
+  if (state === 'notfound')   sl.textContent = 'Wokwi não encontrado';
+  if (state === 'connected')  sl.textContent = 'Wokwi conectado';
+  if (state === 'found')      sl.textContent = 'ESP32 encontrado — conectando…';
+}
+
+/* ── SCAN FUNCTION ── */
+// silent=true → chamado no boot, não mostra erros agressivos
+async function scanIP(silent = false) {
   const btn = $('btn-scan');
   const statusEl = $('scan-status');
   const resultsEl = $('scan-results');
@@ -1500,9 +1481,10 @@ async function scanIP() {
   resultsEl.innerHTML = '';
   statusEl.style.display = 'flex';
 
-  // Wokwi typically assigns 10.0.0.2 through 10.0.0.10
+  setBanner('scanning', '🔍 Procurando ESP32 no Wokwi automaticamente…');
+
   const candidates = [
-    '10.0.0.2','10.0.0.3','10.0.0.4','10.0.0.5','10.0.0.6',
+    'localhost','10.0.0.2','10.0.0.3','10.0.0.4','10.0.0.5','10.0.0.6',
     '10.0.0.7','10.0.0.8','10.0.0.9','10.0.0.10',
     '192.168.1.100','192.168.1.101','192.168.0.100','192.168.0.101',
   ];
@@ -1522,6 +1504,14 @@ async function scanIP() {
       if (res.ok) {
         const data = await res.json();
         found++;
+
+        // Auto-connect on first find
+        if (found === 1) {
+          fillIP(ip);
+          conectar();
+          setBanner('found', `✅ ESP32 encontrado em <strong>${ip}</strong> — conectando automaticamente…`);
+        }
+
         const item = document.createElement('div');
         item.className = 'scan-result-item';
         item.innerHTML = `
@@ -1531,14 +1521,12 @@ async function scanIP() {
               Temp ${(data.temperatura_c??0).toFixed(1)}°C · NDVI ${(data.ndvi_estimado??0).toFixed(2)}
             </span>
           </div>
-          <button class="scan-result-btn" onclick="fillIP('${ip}');conectar()">Usar este IP</button>
+          <button class="scan-result-btn" onclick="fillIP('${ip}');conectar()">Usar</button>
         `;
         resultsEl.appendChild(item);
         addLog(`✓ ESP32 encontrado em ${ip}`, 'ok');
       }
-    } catch(_) {
-      // not reachable — continue
-    }
+    } catch(_) {}
   }
 
   statusEl.style.display = 'none';
@@ -1549,22 +1537,41 @@ async function scanIP() {
     statusEl.style.display = 'flex';
     statusEl.innerHTML = `⚠ Nenhum ESP32 encontrado. Confirme que o Wokwi está rodando e que o CORS está desbloqueado.`;
     statusEl.style.color = 'var(--warn)';
-    addLog('⚠ Scan finalizado: nenhum ESP32 encontrado na rede', 'warn');
-    toast('warn', '⚠ ESP32 não encontrado',
-      'Verifique se o Wokwi está rodando e instale a extensão <strong>CORS Unblock</strong> no Chrome.',
-      { dur: 7000 });
+    addLog('⚠ Scan: nenhum ESP32 encontrado', 'warn');
+    setBanner('notfound', '⚠ Nenhum ESP32 encontrado. Certifique-se que o Wokwi está rodando e que a extensão <strong>CORS Unblock</strong> está ativa.');
+    if (!silent) {
+      toast('warn', '⚠ ESP32 não encontrado',
+        'Verifique se o Wokwi está rodando e instale a extensão <strong>CORS Unblock</strong> no Chrome.',
+        { dur: 7000 });
+    }
   } else {
-    addLog(`✓ Scan finalizado: ${found} ESP32 encontrado(s)`, 'ok');
-    toast('ok', `🛰 ${found} ESP32 encontrado!`,
-      `Clique em <strong>Usar este IP</strong> no resultado para conectar.`,
-      { dur: 5000 });
+    addLog(`✓ Scan: ${found} ESP32 encontrado(s) — conexão automática iniciada`, 'ok');
   }
+}
+
+/* ── AUTO-SCAN NO BOOT ── */
+// Verifica Wokwi periodicamente em segundo plano mesmo sem interação
+let _autoScanInterval = null;
+
+function iniciarAutoScan() {
+  // Primeiro scan imediato após 1.5s (tempo para página carregar)
+  setTimeout(() => scanIP(true), 1500);
+
+  // Re-scan a cada 15s enquanto não estiver conectado
+  _autoScanInterval = setInterval(() => {
+    if (!connected && !simMode) {
+      scanIP(true);
+    } else {
+      clearInterval(_autoScanInterval);
+    }
+  }, 15000);
 }
 
 /* ── INIT ── */
 $('ts').textContent = now();
 addLog('AgroVision Dashboard inicializado', 'ok');
-addLog('Configure o IP do ESP32 ou use o modo Demo', 'warn');
+addLog('🔍 Procurando ESP32 automaticamente...', 'warn');
+iniciarAutoScan();
 </script>
 </body>
 </html>

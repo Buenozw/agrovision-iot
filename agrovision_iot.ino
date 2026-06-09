@@ -61,7 +61,7 @@ void serialLinha() {
 
 void serialBanner() {
   serialLinha();
-  Serial.println(F("   _    ग्रो Vision IoT  —  ESP32"));
+  Serial.println(F("   Vision IoT  —  ESP32"));
   Serial.println(F("   AgroVision IoT  |  FIAP 2026/1"));
   serialLinha();
 }
